@@ -1,22 +1,55 @@
 import * as React from "react"
 import { motion, type HTMLMotionProps } from "motion/react"
 import { cn } from "@/lib/utils"
+import { useReducedMotion } from "@/hooks/useReducedMotion"
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
+// Enhanced card animation variants
+const getCardVariants = (prefersReducedMotion: boolean) => ({
+  hidden: {
+    opacity: 0,
+    y: prefersReducedMotion ? 10 : 20,
+    scale: 0.98,
+  },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.3 },
+    scale: 1,
+    transition: {
+      duration: prefersReducedMotion ? 0.2 : 0.4,
+      type: prefersReducedMotion ? "tween" : "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+  hover: {
+    y: prefersReducedMotion ? -2 : -5,
+    boxShadow:
+      "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+    transition: {
+      duration: prefersReducedMotion ? 0.2 : 0.3,
+    },
   },
   exit: {
     opacity: 0,
-    y: -20,
-    transition: { duration: 0.2 },
+    y: prefersReducedMotion ? -10 : -20,
+    scale: 0.98,
+    transition: {
+      duration: prefersReducedMotion ? 0.15 : 0.25,
+    },
   },
-}
+})
 
-function Card({ className, ...props }: HTMLMotionProps<"div">) {
+function Card({
+  className,
+  interactive = false,
+  ...props
+}: HTMLMotionProps<"div"> & { interactive?: boolean }) {
+  // Check if user prefers reduced motion
+  const prefersReducedMotion = useReducedMotion()
+
+  // Get animation variants based on reduced motion preference
+  const cardVariants = getCardVariants(prefersReducedMotion)
+
   return (
     <motion.div
       data-slot='card'
@@ -24,9 +57,11 @@ function Card({ className, ...props }: HTMLMotionProps<"div">) {
       initial='hidden'
       animate='visible'
       exit='exit'
+      whileHover={interactive ? "hover" : undefined}
       layout
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm transition-shadow",
+        interactive && "cursor-pointer",
         className
       )}
       {...props}

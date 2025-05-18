@@ -15,6 +15,9 @@ import { motion, AnimatePresence } from "motion/react"
 import { useNumberStore } from "@/stores/numberStore"
 import { RotateCcw } from "lucide-react"
 
+// Import custom components
+import { PresetButtons } from "./PresetButtons"
+
 export function NumberSettings() {
   // Get state and actions from store
   const {
@@ -76,7 +79,7 @@ export function NumberSettings() {
   }
 
   return (
-    <Card className='w-full max-w-md mb-6'>
+    <Card className='w-full h-full max-w-md mb-6'>
       <CardHeader>
         <CardTitle>Number Settings</CardTitle>
         <CardDescription>
@@ -147,6 +150,9 @@ export function NumberSettings() {
               <span>100</span>
             </div>
           </div>
+
+          {/* Preset Buttons */}
+          <PresetButtons />
         </div>
       </CardContent>
 

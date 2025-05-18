@@ -4,6 +4,14 @@ import { immer } from "zustand/middleware/immer"
 // Import the number store to access shared state
 import { useNumberStore } from "./numberStore"
 
+// Import optimized calculation functions
+import {
+  combinations,
+  hypergeometric,
+  adjustedProbability,
+  clearCaches,
+} from "@/utils/oddsUtils"
+
 // Type definitions
 export type OddsData = {
   totalCombos: number
@@ -14,37 +22,6 @@ export type OddsData = {
     prevSingleChance?: number
     prevAdjustedChance?: number
   }>
-}
-
-/**
- * Calculate factorial of a number
- * @param n Number to calculate factorial for
- * @returns Factorial of n
- */
-function factorial(n: number): number {
-  return n <= 1 ? 1 : n * factorial(n - 1)
-}
-
-/**
- * Calculate combinations (n choose r)
- * @param n Total number of items
- * @param r Number of items to choose
- * @returns Number of possible combinations
- */
-function combinations(n: number, r: number): number {
-  return factorial(n) / (factorial(r) * factorial(n - r))
-}
-
-/**
- * Calculate hypergeometric probability
- * @param k Number of successes in the sample
- * @param N Population size
- * @param K Number of successes in the population
- * @param n Sample size
- * @returns Probability
- */
-function hypergeometric(k: number, N: number, K: number, n: number): number {
-  return (combinations(K, k) * combinations(N - K, n - k)) / combinations(N, n)
 }
 
 // Define the store state type
@@ -70,18 +47,26 @@ export const useOddsStore = create<OddsState>()(
       const { quantity, maxValue, numSets } = useNumberStore.getState()
       const currentOdds = get().odds
 
+      // Calculate total combinations (this is now memoized)
       const totalCombos = combinations(maxValue, quantity)
-      const perMatchOdds = []
 
+      // Type-safe initialization of perMatchOdds array
+      const perMatchOdds: OddsData["perMatchOdds"] = []
+
+      // Calculate odds for each possible match count
       for (let k = 0; k <= quantity; k++) {
+        // Calculate probability using memoized hypergeometric function
         const prob = hypergeometric(k, maxValue, quantity, quantity)
-        const adjusted = 1 - Math.pow(1 - prob, numSets)
+
+        // Calculate adjusted probability with multiple sets
+        const adjusted = adjustedProbability(prob, numSets)
 
         // Get previous values for comparison
         const prevValues = currentOdds.perMatchOdds.find(
           (item) => item.matchCount === k
         )
 
+        // Add to results array
         perMatchOdds.push({
           matchCount: k,
           singleChance: prob,
@@ -94,6 +79,12 @@ export const useOddsStore = create<OddsState>()(
       // Update the store with new odds
       set((state) => {
         state.odds = { totalCombos, perMatchOdds }
+
+        // Clear caches if we have a large number of calculations
+        // This prevents memory leaks while maintaining performance
+        if (maxValue > 100 || quantity > 20) {
+          clearCaches()
+        }
       })
     },
   }))

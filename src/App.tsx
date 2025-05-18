@@ -14,25 +14,39 @@ import { ThemeProvider } from "@/components/theme-provider"
 // Import Framer Motion
 import { motion } from "motion/react"
 
+// Import Toaster
+import { Toaster } from "@/components/ui/sonner"
+
 // Import hooks
 import { useReducedMotion } from "@/hooks/useReducedMotion"
-import { useDebounce } from "@/hooks/useDebounce"
+import { useAdaptiveDebounce } from "@/hooks/useAdaptiveDebounce"
 
 // Import stores
 import { useOddsStore } from "@/stores/oddsStore"
+import { useNumberStore } from "@/stores/numberStore"
+import { ScrollArea } from "./components/ui/scroll-area"
 
 function App() {
   // Check if user prefers reduced motion
   const prefersReducedMotion = useReducedMotion()
 
-  // Initialize odds calculation on app start with debouncing
-  // We use an empty dependency array but still get the debounce benefit on initial load
-  useDebounce(
+  // Get default values for complexity calculation
+  const { quantity, maxValue } = useNumberStore()
+
+  // Calculate complexity factor for initial calculation
+  const initialComplexity = Math.min(
+    Math.max(1, Math.floor(maxValue / 20) + Math.floor(quantity / 5)),
+    5 // Lower max complexity for initial load
+  )
+
+  // Initialize odds calculation on app start with adaptive debouncing
+  useAdaptiveDebounce(
     () => {
       useOddsStore.getState().recalculateOdds()
     },
-    100, // Shorter delay for initial calculation
-    []
+    100, // Base delay for initial calculation
+    initialComplexity, // Complexity factor
+    [] // Empty dependency array for initial load only
   )
 
   // Animation variants for the container
@@ -84,6 +98,7 @@ function App() {
         initial='hidden'
         animate='visible'
       >
+        <Toaster />
         <div className='fixed top-4 right-4 flex gap-2'>
           <HistoryButton />
           <ThemeToggle />
@@ -93,14 +108,14 @@ function App() {
           className='lg:text-5xl md:text-4xl text-3xl font-bold mb-6 text-center'
           variants={titleVariants}
         >
-          🎲 Random Number Generator
+          🎲 Oddly 🎲
         </motion.div>
 
         {/* Two-column layout */}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto'>
           {/* Left column - Number Generator */}
           <motion.div
-            className='flex flex-col items-center'
+            className='flex flex-col items-center h-full'
             variants={columnVariants}
             custom={0}
           >
@@ -110,13 +125,15 @@ function App() {
           </motion.div>
 
           {/* Right column - Odds Visualizer */}
-          <motion.div
-            className='flex flex-col items-center'
-            variants={columnVariants}
-            custom={1}
-          >
-            <OddsVisualizer />
-          </motion.div>
+          <ScrollArea className='h-[65vh] p-1'>
+            <motion.div
+              className='flex flex-col items-center'
+              variants={columnVariants}
+              custom={1}
+            >
+              <OddsVisualizer />
+            </motion.div>
+          </ScrollArea>
         </div>
       </motion.div>
     </ThemeProvider>

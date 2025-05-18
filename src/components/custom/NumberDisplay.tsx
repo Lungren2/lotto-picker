@@ -1,4 +1,10 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card"
 import { useEffect, useState, useMemo } from "react"
 import { motion, AnimatePresence } from "motion/react"
 
@@ -8,6 +14,10 @@ import { getAvailableNumbers } from "@/utils/numberUtils"
 // Import store
 import { useNumberStore } from "@/stores/numberStore"
 
+// Import custom components
+import { NumberBubble } from "./NumberBubble"
+import { ShareButton } from "./ShareButton"
+
 export function NumberDisplay() {
   // Get state from store
   const {
@@ -15,6 +25,7 @@ export function NumberDisplay() {
     hasEnoughNumbers,
     usedNumbers,
     maxValue,
+    quantity,
   } = useNumberStore()
 
   // Track whether the component has mounted
@@ -30,22 +41,6 @@ export function NumberDisplay() {
   useEffect(() => {
     setIsMounted(true)
   }, [])
-
-  // Animation variants for the number bubbles
-  // Will be used with Framer Motion
-  const numberVariants = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: (i: number) => ({
-      scale: 1,
-      opacity: 1,
-      transition: {
-        delay: i * 0.05, // Stagger the animations
-        duration: 0.3,
-        type: "spring",
-        stiffness: 200,
-      },
-    }),
-  }
 
   // Animation variants for the remaining numbers section
   const remainingVariants = {
@@ -67,25 +62,10 @@ export function NumberDisplay() {
     },
   }
 
-  // Animation variants for the remaining number bubbles
-  const remainingNumberVariants = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: (i: number) => ({
-      scale: 1,
-      opacity: 1,
-      transition: {
-        delay: i * 0.02, // Faster stagger for potentially more numbers
-        duration: 0.2,
-        type: "spring",
-        stiffness: 200,
-      },
-    }),
-  }
-
   return (
     <AnimatePresence mode='wait'>
       {isMounted && (
-        <Card className='w-full max-w-md mb-4'>
+        <Card className='w-full h-full max-w-md mb-4'>
           <CardHeader>
             <CardTitle>Your Numbers</CardTitle>
           </CardHeader>
@@ -93,30 +73,20 @@ export function NumberDisplay() {
             <div className='flex flex-wrap justify-center gap-2'>
               {numbers
                 ? numbers.map((num, index) => (
-                    <motion.div
+                    <NumberBubble
                       key={num}
-                      className='w-10 h-10 flex items-center justify-center bg-card border rounded-full shadow-sm'
-                      variants={numberVariants}
-                      initial='hidden'
-                      animate='visible'
-                      custom={index} // For staggered animations
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {num}
-                    </motion.div>
+                      number={num}
+                      index={index}
+                      variant={
+                        index === numbers.length - 1 ? "highlight" : "default"
+                      }
+                    />
                   ))
                 : Array.from({ length: 5 }, (_, index) => (
-                    <motion.div
+                    <div
                       key={`placeholder-${index}`}
-                      className='w-10 h-10 flex items-center justify-center bg-card border rounded-full shadow-sm'
-                      variants={numberVariants}
-                      initial='hidden'
-                      animate='visible'
-                      custom={index}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    ></motion.div>
+                      className='w-10 h-10 flex items-center justify-center bg-card/30 border border-dashed rounded-full'
+                    />
                   ))}
             </div>
 
@@ -135,26 +105,29 @@ export function NumberDisplay() {
                   </h3>
                   <div className='flex flex-wrap justify-center gap-1.5'>
                     {availableNumbers.map((num, index) => (
-                      <motion.div
+                      <NumberBubble
                         key={`remaining-${num}`}
-                        className='w-8 h-8 flex items-center justify-center bg-muted/50 border border-dashed rounded-full text-sm text-muted-foreground'
-                        variants={remainingNumberVariants}
-                        initial='hidden'
-                        animate='visible'
-                        custom={index}
-                        whileHover={{
-                          scale: 1.1,
-                          backgroundColor: "var(--muted)",
-                        }}
-                      >
-                        {num}
-                      </motion.div>
+                        number={num}
+                        size='sm'
+                        variant='muted'
+                        index={index}
+                      />
                     ))}
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
           </CardContent>
+
+          {numbers && numbers.length > 0 && (
+            <CardFooter className='flex justify-center pb-4 pt-0'>
+              <ShareButton
+                numbers={numbers}
+                quantity={quantity}
+                maxValue={maxValue}
+              />
+            </CardFooter>
+          )}
         </Card>
       )}
     </AnimatePresence>
