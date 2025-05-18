@@ -8,6 +8,8 @@ import { ThemeToggle } from "@/components/custom/ThemeToggle"
 import { HistoryButton } from "@/components/custom/HistoryButton"
 import OddsVisualizer from "./components/custom/OddsVisualizer"
 import { TryYourLuck } from "@/components/custom/TryYourLuck"
+import { FadingScrollArea } from "@/components/custom/FadingScrollArea"
+import { ScrollAreaTest } from "@/components/custom/ScrollAreaTest"
 
 // Import theme provider
 import { ThemeProvider } from "@/components/theme-provider"
@@ -25,7 +27,6 @@ import { useAdaptiveDebounce } from "@/hooks/useAdaptiveDebounce"
 // Import stores
 import { useOddsStore } from "@/stores/oddsStore"
 import { useNumberStore } from "@/stores/numberStore"
-import { ScrollArea } from "./components/ui/scroll-area"
 
 function App() {
   // Check if user prefers reduced motion
@@ -104,19 +105,18 @@ function App() {
           <HistoryButton />
           <ThemeToggle />
         </div>
-
+        luck's
         <motion.div
           className='lg:text-5xl md:text-4xl text-3xl font-bold mb-6 text-center'
           variants={titleVariants}
         >
           🎲 Oddly 🎲
         </motion.div>
-
         {/* Two-column layout */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-7xl mx-auto w-full overflow-hidden'>
           {/* Left column - Number Generator */}
           <motion.div
-            className='flex flex-col items-center h-full'
+            className='flex flex-col items-center h-full overflow-y-auto'
             variants={columnVariants}
             custom={0}
           >
@@ -126,16 +126,18 @@ function App() {
           </motion.div>
 
           {/* Right column - Odds Visualizer and Try Your Luck */}
-          <ScrollArea className='h-[80vh] p-1'>
+          <FadingScrollArea className='h-[65vh] w-full max-w-full'>
             <motion.div
-              className='flex flex-col items-center'
+              className='flex flex-col items-center w-full px-1'
               variants={columnVariants}
               custom={1}
             >
-              <OddsVisualizer />
-              <TryYourLuck />
+              <div className='w-full max-w-full overflow-x-hidden'>
+                <OddsVisualizer />
+                <TryYourLuck />
+              </div>
             </motion.div>
-          </ScrollArea>
+          </FadingScrollArea>
         </div>
       </motion.div>
     </ThemeProvider>

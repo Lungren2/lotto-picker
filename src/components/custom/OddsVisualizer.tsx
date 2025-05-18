@@ -115,7 +115,7 @@ export default function OddsVisualizer() {
     <motion.div variants={containerVariants} initial='hidden' animate='visible'>
       <motion.div variants={cardVariants}>
         <Card interactive>
-          <CardContent className='p-4 space-y-4'>
+          <CardContent className='p-2 sm:p-4 space-y-4 w-full max-w-full overflow-hidden'>
             <motion.div
               className='flex items-center justify-between'
               initial={{ opacity: 0, y: -10 }}
@@ -153,7 +153,7 @@ export default function OddsVisualizer() {
               </motion.div>
             </AnimatePresence>
 
-            <div className='gap-3 grid grid-cols-1 md:grid-cols-2'>
+            <div className='gap-3 grid grid-cols-1 md:grid-cols-2 w-full max-w-full'>
               {odds.perMatchOdds
                 .filter(({ matchCount }) => matchCount > 0) // Filter out 0 matches
                 .map(

@@ -1,10 +1,14 @@
 /// <reference lib="webworker" />
-import { clientsClaim } from 'workbox-core'
-import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching'
-import { registerRoute } from 'workbox-routing'
-import { StaleWhileRevalidate, CacheFirst, NetworkFirst } from 'workbox-strategies'
-import { ExpirationPlugin } from 'workbox-expiration'
-import { CacheableResponsePlugin } from 'workbox-cacheable-response'
+import { clientsClaim } from "workbox-core"
+import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching"
+import { registerRoute } from "workbox-routing"
+import {
+  StaleWhileRevalidate,
+  CacheFirst,
+  NetworkFirst,
+} from "workbox-strategies"
+import { ExpirationPlugin } from "workbox-expiration"
+import { CacheableResponsePlugin } from "workbox-cacheable-response"
 
 declare const self: ServiceWorkerGlobalScope
 
@@ -16,20 +20,17 @@ const manifest = self.__WB_MANIFEST
 precacheAndRoute(manifest)
 
 // Cache the index.html page and return it for all navigation requests
-const indexHandler = createHandlerBoundToURL('/index.html')
-registerRoute(
-  ({ request }) => request.mode === 'navigate',
-  indexHandler
-)
+const indexHandler = createHandlerBoundToURL("/index.html")
+registerRoute(({ request }) => request.mode === "navigate", indexHandler)
 
 // Cache CSS, JS, and Web Worker files with a Stale While Revalidate strategy
 registerRoute(
-  ({ request }) => 
-    request.destination === 'style' ||
-    request.destination === 'script' ||
-    request.destination === 'worker',
+  ({ request }) =>
+    request.destination === "style" ||
+    request.destination === "script" ||
+    request.destination === "worker",
   new StaleWhileRevalidate({
-    cacheName: 'assets-cache',
+    cacheName: "assets-cache",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
@@ -44,9 +45,9 @@ registerRoute(
 
 // Cache images with a Cache First strategy
 registerRoute(
-  ({ request }) => request.destination === 'image',
+  ({ request }) => request.destination === "image",
   new CacheFirst({
-    cacheName: 'images-cache',
+    cacheName: "images-cache",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
@@ -61,9 +62,9 @@ registerRoute(
 
 // Cache font files with a Cache First strategy
 registerRoute(
-  ({ request }) => request.destination === 'font',
+  ({ request }) => request.destination === "font",
   new CacheFirst({
-    cacheName: 'fonts-cache',
+    cacheName: "fonts-cache",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
@@ -77,20 +78,20 @@ registerRoute(
 )
 
 // Handle offline fallback
-const offlineFallbackPage = '/offline.html'
+const offlineFallbackPage = "/offline.html"
 
 // Cache the offline page on install
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open('offline-cache').then((cache) => {
+    caches.open("offline-cache").then((cache) => {
       return cache.add(offlineFallbackPage)
     })
   )
 })
 
 // Serve the offline page when offline and the requested page is not in cache
-self.addEventListener('fetch', (event) => {
-  if (event.request.mode === 'navigate') {
+self.addEventListener("fetch", (event) => {
+  if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request).catch(() => {
         return caches.match(offlineFallbackPage)
@@ -100,15 +101,33 @@ self.addEventListener('fetch', (event) => {
 })
 
 // Listen for messages from the client
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting()
+  }
+
+  // Handle simulation messages
+  if (event.data && event.data.type === "SIMULATION_UPDATE") {
+    // Update any UI or state as needed
+    const clients = self.clients
+      .matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      })
+      .then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: "SIMULATION_UPDATE",
+            data: event.data.data,
+          })
+        })
+      })
   }
 })
 
 // Background sync for offline actions
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-history') {
+self.addEventListener("sync", (event) => {
+  if (event.tag === "sync-history") {
     event.waitUntil(syncHistory())
   }
 })
@@ -118,21 +137,38 @@ async function syncHistory() {
   try {
     // This would typically sync with a server
     // For this app, we're just ensuring local storage is consistent
-    const historyData = localStorage.getItem('numberHistory')
+    const historyData = localStorage.getItem("numberHistory")
     if (historyData) {
       // In a real app, you might send this data to a server
-      console.log('History data synced successfully')
+      // Notify clients that history has been synced
+      self.clients.matchAll({ type: "window" }).then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: "HISTORY_SYNCED",
+            success: true,
+          })
+        })
+      })
     }
     return Promise.resolve()
   } catch (error) {
-    console.error('Error syncing history:', error)
+    // Notify clients of the error
+    self.clients.matchAll({ type: "window" }).then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({
+          type: "HISTORY_SYNCED",
+          success: false,
+          error: error.message,
+        })
+      })
+    })
     return Promise.reject(error)
   }
 }
 
 // Periodic sync to keep data fresh (if supported)
-self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'refresh-data') {
+self.addEventListener("periodicsync", (event) => {
+  if (event.tag === "refresh-data") {
     event.waitUntil(refreshData())
   }
 })
@@ -141,10 +177,55 @@ self.addEventListener('periodicsync', (event) => {
 async function refreshData() {
   try {
     // In a real app with a backend, you might fetch fresh data here
-    console.log('Data refreshed successfully')
     return Promise.resolve()
   } catch (error) {
-    console.error('Error refreshing data:', error)
     return Promise.reject(error)
   }
 }
+
+// Handle notification clicks
+self.addEventListener("notificationclick", (event) => {
+  const notification = event.notification
+  const action = event.action
+  const data = notification.data
+
+  // Close the notification
+  notification.close()
+
+  // Handle different actions
+  if (action === "open") {
+    // Open the app
+    if (data && data.url) {
+      event.waitUntil(
+        self.clients.matchAll({ type: "window" }).then((clientList) => {
+          // Check if there is already a window/tab open with the target URL
+          for (const client of clientList) {
+            if (client.url === data.url && "focus" in client) {
+              return client.focus()
+            }
+          }
+          // If no window/tab is open, open a new one
+          if (self.clients.openWindow) {
+            return self.clients.openWindow(data.url)
+          }
+        })
+      )
+    }
+  }
+
+  // If no action or default action, just open the app
+  if (!action || action === "default") {
+    event.waitUntil(
+      self.clients.matchAll({ type: "window" }).then((clientList) => {
+        for (const client of clientList) {
+          if ("focus" in client) {
+            return client.focus()
+          }
+        }
+        if (self.clients.openWindow) {
+          return self.clients.openWindow("/")
+        }
+      })
+    )
+  }
+})

@@ -20,6 +20,7 @@ interface UseSimulationReturn {
     set: number[]
   }
   winningSet: number[]
+  currentSpeed: number
   startSimulation: () => void
   pauseSimulation: () => void
   resumeSimulation: () => void
@@ -109,10 +110,12 @@ export function useSimulation({
   ])
 
   // Use the adaptive simulation hook to handle the simulation loop
-  const { isProcessing } = useAdaptiveSimulation({
+  const { isProcessing, currentSpeed } = useAdaptiveSimulation({
     onSimulationStep: runSimulationStep,
     isRunning: status === "running",
     speed: settings.speed,
+    currentAttempt,
+    settings,
   })
 
   // Start the simulation
@@ -181,6 +184,7 @@ export function useSimulation({
     currentAttempt,
     bestMatch,
     winningSet,
+    currentSpeed,
     startSimulation,
     pauseSimulation,
     resumeSimulation,

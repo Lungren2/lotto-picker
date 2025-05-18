@@ -6,7 +6,7 @@
 const factorialCache: Record<number, number> = {
   0: 1,
   1: 1,
-};
+}
 
 /**
  * Calculate factorial of a number with memoization
@@ -16,21 +16,21 @@ const factorialCache: Record<number, number> = {
 export function factorial(n: number): number {
   // Check if we have a cached result
   if (factorialCache[n] !== undefined) {
-    return factorialCache[n];
+    return factorialCache[n]
   }
-  
+
   // Calculate and cache the result
-  let result = n;
+  let result = n
   for (let i = n - 1; i > 1; i--) {
-    result *= i;
+    result *= i
   }
-  
-  factorialCache[n] = result;
-  return result;
+
+  factorialCache[n] = result
+  return result
 }
 
 // Cache for combinations calculations
-const combinationsCache: Record<string, number> = {};
+const combinationsCache: Record<string, number> = {}
 
 /**
  * Calculate combinations (n choose r) with memoization
@@ -40,35 +40,35 @@ const combinationsCache: Record<string, number> = {};
  */
 export function combinations(n: number, r: number): number {
   // Ensure r is not greater than n
-  if (r > n) return 0;
-  
+  if (r > n) return 0
+
   // Optimize for common cases
-  if (r === 0 || r === n) return 1;
-  if (r === 1) return n;
-  
+  if (r === 0 || r === n) return 1
+  if (r === 1) return n
+
   // Use symmetry to reduce calculations
   if (r > n / 2) {
-    r = n - r;
+    r = n - r
   }
-  
+
   // Create a cache key
-  const cacheKey = `${n}_${r}`;
-  
+  const cacheKey = `${n}_${r}`
+
   // Check if we have a cached result
   if (combinationsCache[cacheKey] !== undefined) {
-    return combinationsCache[cacheKey];
+    return combinationsCache[cacheKey]
   }
-  
+
   // Calculate using factorials
-  const result = factorial(n) / (factorial(r) * factorial(n - r));
-  
+  const result = factorial(n) / (factorial(r) * factorial(n - r))
+
   // Cache the result
-  combinationsCache[cacheKey] = result;
-  return result;
+  combinationsCache[cacheKey] = result
+  return result
 }
 
 // Cache for hypergeometric calculations
-const hypergeometricCache: Record<string, number> = {};
+const hypergeometricCache: Record<string, number> = {}
 
 /**
  * Calculate hypergeometric probability with memoization
@@ -78,21 +78,27 @@ const hypergeometricCache: Record<string, number> = {};
  * @param n Sample size
  * @returns Probability
  */
-export function hypergeometric(k: number, N: number, K: number, n: number): number {
+export function hypergeometric(
+  k: number,
+  N: number,
+  K: number,
+  n: number
+): number {
   // Create a cache key
-  const cacheKey = `${k}_${N}_${K}_${n}`;
-  
+  const cacheKey = `${k}_${N}_${K}_${n}`
+
   // Check if we have a cached result
   if (hypergeometricCache[cacheKey] !== undefined) {
-    return hypergeometricCache[cacheKey];
+    return hypergeometricCache[cacheKey]
   }
-  
+
   // Calculate using combinations
-  const result = (combinations(K, k) * combinations(N - K, n - k)) / combinations(N, n);
-  
+  const result =
+    (combinations(K, k) * combinations(N - K, n - k)) / combinations(N, n)
+
   // Cache the result
-  hypergeometricCache[cacheKey] = result;
-  return result;
+  hypergeometricCache[cacheKey] = result
+  return result
 }
 
 /**
@@ -101,8 +107,11 @@ export function hypergeometric(k: number, N: number, K: number, n: number): numb
  * @param numSets Number of sets
  * @returns Adjusted probability
  */
-export function adjustedProbability(probability: number, numSets: number): number {
-  return 1 - Math.pow(1 - probability, numSets);
+export function adjustedProbability(
+  probability: number,
+  numSets: number
+): number {
+  return 1 - Math.pow(1 - probability, numSets)
 }
 
 /**
@@ -110,18 +119,18 @@ export function adjustedProbability(probability: number, numSets: number): numbe
  */
 export function clearCaches(): void {
   // Keep the base cases
-  Object.keys(factorialCache).forEach(key => {
+  Object.keys(factorialCache).forEach((key) => {
     if (parseInt(key) > 1) {
-      delete factorialCache[parseInt(key)];
+      delete factorialCache[parseInt(key)]
     }
-  });
-  
+  })
+
   // Clear other caches completely
-  Object.keys(combinationsCache).forEach(key => {
-    delete combinationsCache[key];
-  });
-  
-  Object.keys(hypergeometricCache).forEach(key => {
-    delete hypergeometricCache[key];
-  });
+  Object.keys(combinationsCache).forEach((key) => {
+    delete combinationsCache[key]
+  })
+
+  Object.keys(hypergeometricCache).forEach((key) => {
+    delete hypergeometricCache[key]
+  })
 }
