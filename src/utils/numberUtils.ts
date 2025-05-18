@@ -59,3 +59,30 @@ export const hasEnoughNumbers = (
 ): boolean => {
   return availableCount >= requiredCount
 }
+
+/**
+ * Counts how many numbers in set A match numbers in set B
+ * @param setA First set of numbers
+ * @param setB Second set of numbers
+ * @returns Number of matching numbers
+ */
+export const countMatches = (setA: NumberArray, setB: NumberArray): number => {
+  return setA.filter((num) => setB.includes(num)).length
+}
+
+/**
+ * Checks if two number sets are identical (same numbers, regardless of order)
+ * @param setA First set of numbers
+ * @param setB Second set of numbers
+ * @returns Boolean indicating if the sets match exactly
+ */
+export const areSetsEqual = (setA: NumberArray, setB: NumberArray): boolean => {
+  if (setA.length !== setB.length) return false
+
+  // Sort both arrays to ensure consistent comparison
+  const sortedA = [...setA].sort((a, b) => a - b)
+  const sortedB = [...setB].sort((a, b) => a - b)
+
+  // Compare each element
+  return sortedA.every((num, index) => num === sortedB[index])
+}

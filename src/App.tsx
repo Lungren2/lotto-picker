@@ -7,6 +7,7 @@ import { StatusBar } from "@/components/custom/StatusBar"
 import { ThemeToggle } from "@/components/custom/ThemeToggle"
 import { HistoryButton } from "@/components/custom/HistoryButton"
 import OddsVisualizer from "./components/custom/OddsVisualizer"
+import { TryYourLuck } from "@/components/custom/TryYourLuck"
 
 // Import theme provider
 import { ThemeProvider } from "@/components/theme-provider"
@@ -124,14 +125,15 @@ function App() {
             <StatusBar />
           </motion.div>
 
-          {/* Right column - Odds Visualizer */}
-          <ScrollArea className='h-[65vh] p-1'>
+          {/* Right column - Odds Visualizer and Try Your Luck */}
+          <ScrollArea className='h-[80vh] p-1'>
             <motion.div
               className='flex flex-col items-center'
               variants={columnVariants}
               custom={1}
             >
               <OddsVisualizer />
+              <TryYourLuck />
             </motion.div>
           </ScrollArea>
         </div>

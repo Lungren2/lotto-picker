@@ -117,6 +117,18 @@ export function HistoryDialog({ open, onOpenChange }: HistoryDialogProps) {
                             </div>
                             <div className='text-xs text-muted-foreground'>
                               {entry.quantity} numbers from 1-{entry.maxValue}
+                              {entry.metadata?.type === "simulation" && (
+                                <span className='ml-2 inline-flex items-center'>
+                                  • Simulation:{" "}
+                                  {entry.metadata.attempts.toLocaleString()}{" "}
+                                  attempts
+                                  {entry.metadata.matched && (
+                                    <span className='ml-1 text-emerald-500'>
+                                      • Match found!
+                                    </span>
+                                  )}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </Card>

@@ -3,6 +3,13 @@ import { immer } from "zustand/middleware/immer"
 import { persist, createJSONStorage } from "zustand/middleware"
 import { NumberArray } from "@/utils/numberUtils"
 
+// Define the type for a history entry metadata
+export interface SimulationMetadata {
+  type: "simulation"
+  attempts: number
+  matched: boolean
+}
+
 // Define the type for a history entry
 export interface HistoryEntry {
   id: string
@@ -11,6 +18,7 @@ export interface HistoryEntry {
   quantity: number
   maxValue: number
   synced?: boolean // Track if entry has been synced (for future server sync)
+  metadata?: SimulationMetadata // Optional metadata for simulation results
 }
 
 // Define the store state type
@@ -40,7 +48,12 @@ export const useHistoryStore = create<HistoryState>()(
       filteredEntries: [],
 
       // Actions
-      addEntry: (numbers: NumberArray, quantity: number, maxValue: number) => {
+      addEntry: (
+        numbers: NumberArray,
+        quantity: number,
+        maxValue: number,
+        metadata?: SimulationMetadata
+      ) => {
         set((state) => {
           // Create a new entry
           const newEntry: HistoryEntry = {
@@ -50,6 +63,7 @@ export const useHistoryStore = create<HistoryState>()(
             quantity,
             maxValue,
             synced: navigator.onLine, // Mark as synced if online
+            metadata, // Add optional metadata
           }
 
           // Add to entries
