@@ -5,6 +5,7 @@ import { NumberSettings } from "@/components/custom/NumberSettings"
 import { NumberDisplay } from "@/components/custom/NumberDisplay"
 import { StatusBar } from "@/components/custom/StatusBar"
 import { ThemeToggle } from "@/components/custom/ThemeToggle"
+import { HistoryButton } from "@/components/custom/HistoryButton"
 import OddsVisualizer from "./components/custom/OddsVisualizer"
 
 // Import theme provider
@@ -83,7 +84,10 @@ function App() {
         initial='hidden'
         animate='visible'
       >
-        <ThemeToggle />
+        <div className='fixed top-4 right-4 flex gap-2'>
+          <HistoryButton />
+          <ThemeToggle />
+        </div>
 
         <motion.div
           className='lg:text-5xl md:text-4xl text-3xl font-bold mb-6 text-center'

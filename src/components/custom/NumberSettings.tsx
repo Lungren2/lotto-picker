@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "motion/react"
 
 // Import store
 import { useNumberStore } from "@/stores/numberStore"
+import { RotateCcw } from "lucide-react"
 
 export function NumberSettings() {
   // Get state and actions from store
@@ -153,7 +154,7 @@ export function NumberSettings() {
         {/* AnimatePresence will be used with Framer Motion */}
         <AnimatePresence mode='wait'>
           <motion.div
-            className='w-full'
+            className='w-full flex gap-2'
             variants={buttonVariants}
             whileHover='hover'
             whileTap='tap'
@@ -162,7 +163,7 @@ export function NumberSettings() {
           >
             <Button
               onClick={handleActionClick}
-              className='w-full'
+              className='flex-grow'
               variant={hasEnoughNumbers ? "default" : "destructive"}
             >
               {/* AnimatePresence for text change will be used with Framer Motion */}
@@ -178,6 +179,26 @@ export function NumberSettings() {
                 </motion.span>
               </AnimatePresence>
             </Button>
+            {hasEnoughNumbers && (
+              <Button
+                onClick={() => resetNumbers()}
+                className='w-auto'
+                variant={"destructive"}
+              >
+                {/* AnimatePresence for text change will be used with Framer Motion */}
+                <AnimatePresence mode='wait'>
+                  <motion.span
+                    key={"reset-permanent"}
+                    variants={textChangeVariants}
+                    initial='exit'
+                    animate='enter'
+                    exit='exit'
+                  >
+                    <RotateCcw />
+                  </motion.span>
+                </AnimatePresence>
+              </Button>
+            )}
           </motion.div>
         </AnimatePresence>
       </CardFooter>
