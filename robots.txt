@@ -1,0 +1,17 @@
+# robots.txt for Oddly - Random Number Generator
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://oddly.netlify.app/sitemap.xml
+
+# Disallow access to specific files and directories
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /*.json$
+Disallow: /*.js$
+Disallow: /*.ts$
+Disallow: /*.tsx$
+Disallow: /*.config.js$
+Disallow: /*.config.ts$

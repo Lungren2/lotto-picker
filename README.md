@@ -1,54 +1,122 @@
-# React + TypeScript + Vite
+# Lotto Picker - Random Number Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, interactive random number generator built with React, TypeScript, and Vite. This application allows users to generate random number sets for lottery games, raffles, or any scenario requiring unique random numbers.
 
-Currently, two official plugins are available:
+![Lotto Picker Screenshot](screenshot.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Random Number Generation**: Generate unique sets of random numbers within a specified range
+- **High-Quality Randomness**: Uses the Mersenne Twister (MT19937) algorithm for high-quality pseudorandom number generation
+- **Customizable Settings**: Adjust the quantity of numbers and maximum value
+- **Number History**: View and filter previously generated number sets
+- **Odds Visualization**: See the statistical probability of matching different quantities of numbers
+- **Dark Mode Support**: Toggle between light and dark themes
+- **Accessibility**: Respects user preferences for reduced motion
+- **Responsive Design**: Works on desktop and mobile devices
+- **Persistence**: Saves settings and history to localStorage
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Technology Stack
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **Frontend Framework**: React with TypeScript
+- **Build Tool**: Vite
+- **UI Components**: shadcn/ui (based on Radix UI)
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **State Management**: Zustand with Immer
+- **Random Number Generation**: Custom Mersenne Twister implementation
+
+## Architecture
+
+The application follows a modern React architecture with the following key components:
+
+### Core Components
+
+- **App**: Main application component that sets up the layout and theme
+- **NumberSettings**: Controls for adjusting the quantity and maximum value
+- **NumberDisplay**: Displays the generated numbers
+- **StatusBar**: Shows the status of available and used numbers
+- **OddsVisualizer**: Displays statistical odds of matching different quantities
+- **HistoryButton/Dialog**: Interface for viewing and filtering number history
+
+### State Management
+
+The application uses Zustand with Immer for state management, organized into multiple stores:
+
+- **numberStore**: Manages the number generation settings and current numbers
+- **historyStore**: Tracks the history of generated number sets
+- **oddsStore**: Calculates and stores statistical odds
+
+### Custom Hooks
+
+- **useNumberGenerator**: Manages the number generation logic
+- **useReducedMotion**: Detects user preference for reduced motion
+- **useDebounce**: Optimizes performance by debouncing frequent calculations
+
+### Utilities
+
+- **mersenneTwister.ts**: Implementation of the MT19937 algorithm
+- **numberUtils.ts**: Utility functions for number generation and manipulation
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher recommended)
+- pnpm (recommended) or npm
+
+### Installation
+
+1. Clone the repository
+
+   ```bash
+   git clone https://github.com/yourusername/lotto-picker.git
+   cd lotto-picker
+   ```
+
+2. Install dependencies
+
+   ```bash
+   pnpm install
+   # or
+   npm install
+   ```
+
+3. Start the development server
+
+   ```bash
+   pnpm dev
+   # or
+   npm run dev
+   ```
+
+4. Open your browser to `http://localhost:5173`
+
+## Building for Production
+
+```bash
+pnpm build
+# or
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The built files will be in the `dist` directory.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Usage
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+1. **Adjust Settings**: Use the sliders to set the quantity of numbers and maximum value
+2. **Generate Numbers**: Click the "Generate Set" button to create a new set of random numbers
+3. **View History**: Click the history icon to see previously generated sets
+4. **Toggle Theme**: Click the theme icon to switch between light and dark mode
+5. **Reset Pool**: If you run out of available numbers, click "Reset Pool" to clear used numbers
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- [shadcn/ui](https://ui.shadcn.com/) for the beautiful UI components
+- [Framer Motion](https://www.framer.com/motion/) for the smooth animations
+- [Zustand](https://zustand-demo.pmnd.rs/) for the state management
+- [Tailwind CSS](https://tailwindcss.com/) for the styling system
