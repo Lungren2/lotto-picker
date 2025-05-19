@@ -15,6 +15,7 @@ A modern, interactive random number generator built with React, TypeScript, and 
 - **Accessibility**: Respects user preferences for reduced motion
 - **Responsive Design**: Works on desktop and mobile devices
 - **Persistence**: Saves settings and history to localStorage
+- **Error Handling**: Granular error boundaries for resilient user experience
 
 ## Technology Stack
 
@@ -57,6 +58,64 @@ The application uses Zustand with Immer for state management, organized into mul
 
 - **mersenneTwister.ts**: Implementation of the MT19937 algorithm
 - **numberUtils.ts**: Utility functions for number generation and manipulation
+- **debugLogger.ts**: Utility for logging errors and debugging information
+
+### Error Handling
+
+The application implements a comprehensive error handling strategy with multiple layers of protection:
+
+#### Error Boundaries
+
+- **RootErrorBoundary**: Top-level error boundary that catches any unhandled errors in the application
+- **Specialized Error Boundaries**: Feature-specific error boundaries with custom fallback UIs:
+  - **HistoryErrorBoundary**: Handles errors in the history feature with options to clear corrupted history data
+  - **SimulationErrorBoundary**: Handles errors in the simulation/TryYourLuck feature with reset capabilities
+  - **Component-level boundaries**: Smaller boundaries around individual components
+
+#### Error Handling Hooks
+
+- **useErrorHandler**: Custom hook for handling errors in functional components with:
+  - Error state management
+  - Automatic logging
+  - Toast notifications
+  - Function wrappers for try/catch handling
+
+#### Error Logging
+
+- Centralized error logging through the debugLogger utility
+- Configurable log levels (INFO, WARN, ERROR, DEBUG)
+- Persistent logging to localStorage or file system (when available)
+
+#### Developer Usage
+
+To use error boundaries in your components:
+
+```tsx
+// Basic usage
+<ErrorBoundary boundary="YourFeatureName">
+  <YourComponent />
+</ErrorBoundary>
+
+// With HOC pattern
+const ProtectedComponent = withErrorBoundary(YourComponent, "YourFeatureName");
+
+// With custom error handler hook
+const { handleError, withErrorHandling, tryExecute } = useErrorHandler({
+  component: "YourComponentName"
+});
+
+// Wrap async functions
+const safeAsyncFunction = withErrorHandling(async () => {
+  // Your async code here
+}, "context description");
+
+// Wrap synchronous functions
+const safeSyncFunction = tryExecute(() => {
+  // Your sync code here
+}, "context description");
+```
+
+For error recovery, each boundary provides reset mechanisms and can be extended with custom fallback UIs.
 
 ## Getting Started
 

@@ -24,7 +24,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion"
 // Import custom components
 import { NumberBubble } from "./NumberBubble"
 import { HistoryAnalysis } from "./HistoryAnalysis"
-import { FadingScrollArea } from "./FadingScrollArea"
+import ScrollFade from "./FadingScrollArea"
 
 interface HistoryDialogProps {
   open: boolean
@@ -87,7 +87,7 @@ export function HistoryDialog({ open, onOpenChange }: HistoryDialogProps) {
                 className='mb-4'
               />
 
-              <FadingScrollArea className='h-[45vh]' fadeSize='30px'>
+              <ScrollFade className='h-[45vh]'>
                 {filteredEntries.length > 0 ? (
                   <AnimatePresence>
                     {filteredEntries.map((entry, index) => (
@@ -142,13 +142,13 @@ export function HistoryDialog({ open, onOpenChange }: HistoryDialogProps) {
                       : "No history entries yet."}
                   </div>
                 )}
-              </FadingScrollArea>
+              </ScrollFade>
             </TabsContent>
 
             <TabsContent value='analysis'>
-              <FadingScrollArea className='h-[50vh] rounded-md'>
+              <ScrollFade className='h-[50vh] rounded-md'>
                 <HistoryAnalysis />
-              </FadingScrollArea>
+              </ScrollFade>
             </TabsContent>
           </Tabs>
         </div>

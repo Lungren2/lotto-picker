@@ -8,8 +8,8 @@ import { ThemeToggle } from "@/components/custom/ThemeToggle"
 import { HistoryButton } from "@/components/custom/HistoryButton"
 import OddsVisualizer from "./components/custom/OddsVisualizer"
 import { TryYourLuck } from "@/components/custom/TryYourLuck"
-import { FadingScrollArea } from "@/components/custom/FadingScrollArea"
-import { ScrollAreaTest } from "@/components/custom/ScrollAreaTest"
+import ErrorBoundary from "@/components/custom/ErrorBoundary"
+import SimulationErrorBoundary from "@/components/custom/SimulationErrorBoundary"
 
 // Import theme provider
 import { ThemeProvider } from "@/components/theme-provider"
@@ -23,10 +23,12 @@ import { Toaster } from "@/components/ui/sonner"
 // Import hooks
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { useAdaptiveDebounce } from "@/hooks/useAdaptiveDebounce"
+import { useErrorHandler } from "@/hooks/useErrorHandler"
 
 // Import stores
 import { useOddsStore } from "@/stores/oddsStore"
 import { useNumberStore } from "@/stores/numberStore"
+import ScrollFade from "./components/custom/FadingScrollArea"
 
 function App() {
   // Check if user prefers reduced motion
@@ -92,6 +94,9 @@ function App() {
     },
   }
 
+  // Use error handler for global app errors if needed
+  useErrorHandler({ component: "App" })
+
   return (
     <ThemeProvider defaultTheme='light'>
       <motion.div
@@ -103,7 +108,9 @@ function App() {
         <Toaster />
         <div className='fixed top-4 right-4 flex gap-2'>
           <HistoryButton />
-          <ThemeToggle />
+          <ErrorBoundary boundary='ThemeToggle'>
+            <ThemeToggle />
+          </ErrorBoundary>
         </div>
         luck's
         <motion.div
@@ -113,31 +120,37 @@ function App() {
           🎲 Oddly 🎲
         </motion.div>
         {/* Two-column layout */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-7xl mx-auto w-full overflow-hidden'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto w-full overflow-hidden'>
           {/* Left column - Number Generator */}
           <motion.div
-            className='flex flex-col items-center h-full overflow-y-auto'
+            className='flex flex-col items-center h-full w-full overflow-y-auto'
             variants={columnVariants}
             custom={0}
           >
-            <NumberSettings />
-            <NumberDisplay />
-            <StatusBar />
+            <ErrorBoundary boundary='NumberGenerator'>
+              <NumberSettings />
+              <NumberDisplay />
+              <StatusBar />
+            </ErrorBoundary>
           </motion.div>
 
           {/* Right column - Odds Visualizer and Try Your Luck */}
-          <FadingScrollArea className='h-[65vh] w-full max-w-full'>
+          <ScrollFade className='h-[65vh] w-full max-w-full'>
             <motion.div
-              className='flex flex-col items-center w-full px-1'
+              className='flex flex-col items-center w-full'
               variants={columnVariants}
               custom={1}
             >
-              <div className='w-full max-w-full overflow-x-hidden'>
-                <OddsVisualizer />
-                <TryYourLuck />
+              <div className='w-full max-w-full overflow-x-hidden gap-2 flex flex-col'>
+                <ErrorBoundary boundary='OddsVisualizer'>
+                  <OddsVisualizer />
+                </ErrorBoundary>
               </div>
             </motion.div>
-          </FadingScrollArea>
+          </ScrollFade>
+          <SimulationErrorBoundary>
+            <TryYourLuck />
+          </SimulationErrorBoundary>
         </div>
       </motion.div>
     </ThemeProvider>

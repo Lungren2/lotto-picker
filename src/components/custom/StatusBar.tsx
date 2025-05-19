@@ -49,7 +49,7 @@ export function StatusBar() {
   }
 
   return (
-    <Card className='w-full h-full max-w-md'>
+    <Card className='w-full h-full '>
       <CardContent className='text-center py-4'>
         <div className='flex justify-between items-center'>
           <motion.p

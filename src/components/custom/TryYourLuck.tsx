@@ -166,7 +166,7 @@ export function TryYourLuck() {
       variants={containerVariants}
       initial='hidden'
       animate='visible'
-      className='w-full max-w-full mx-auto mt-6'
+      className='w-full max-w-full mx-auto'
     >
       <Card>
         <CardHeader>

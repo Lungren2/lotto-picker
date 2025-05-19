@@ -91,13 +91,13 @@ interface SimulationState {
 const getBaseSpeedDelay = (speed: SimulationSettings["speed"]): number => {
   switch (speed) {
     case "slow":
-      return 500
+      return 400
     case "medium":
       return 200
     case "fast":
-      return 50
+      return 100
     case "max":
-      return 0
+      return 50
     default:
       return 200
   }

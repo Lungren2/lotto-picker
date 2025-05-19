@@ -1,4 +1,10 @@
-import { Card, CardContent } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { motion, AnimatePresence } from "motion/react"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { useAdaptiveDebounce } from "@/hooks/useAdaptiveDebounce"
@@ -9,7 +15,7 @@ import { useNumberStore } from "@/stores/numberStore"
 import { useOddsStore } from "@/stores/oddsStore"
 
 // Import icons
-import { ArrowUpIcon, ArrowDownIcon, LoaderIcon } from "lucide-react"
+import { ArrowUpIcon, ArrowDownIcon, LoaderIcon, ChartBar } from "lucide-react"
 
 export default function OddsVisualizer() {
   // Get state from stores (only what we need)
@@ -114,15 +120,13 @@ export default function OddsVisualizer() {
   return (
     <motion.div variants={containerVariants} initial='hidden' animate='visible'>
       <motion.div variants={cardVariants}>
-        <Card interactive>
-          <CardContent className='p-2 sm:p-4 space-y-4 w-full max-w-full overflow-hidden'>
-            <motion.div
-              className='flex items-center justify-between'
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.3 }}
-            >
-              <h2 className='text-xl font-semibold'>Odds Summary</h2>
+        <Card className='gap-2 py-4'>
+          <CardHeader className='pb-0 pt-2  '>
+            <div className='flex items-center justify-between'>
+              <CardTitle className='flex items-center gap-2'>
+                <ChartBar className='h-5 w-5 text-primary' />
+                Odds Summary
+              </CardTitle>
 
               {isDebouncing && (
                 <motion.div
@@ -135,8 +139,12 @@ export default function OddsVisualizer() {
                   <span>Calculating</span>
                 </motion.div>
               )}
-            </motion.div>
-
+            </div>
+            <CardDescription>
+              Statistical probability of matching different quantities
+            </CardDescription>
+          </CardHeader>
+          <CardContent className='p-2 sm:p-4 space-y-3 w-full max-w-full overflow-hidden pt-0'>
             <AnimatePresence mode='wait'>
               <motion.div
                 key={odds.totalCombos}
@@ -144,7 +152,7 @@ export default function OddsVisualizer() {
                 initial='initial'
                 animate='animate'
                 exit='exit'
-                className='bg-primary/5 p-3 rounded-lg border border-primary/20'
+                className='bg-primary/5 p-2 rounded-lg border border-primary/20'
               >
                 <span className='font-medium'>Total unique combinations:</span>{" "}
                 <span className='text-lg font-bold'>
@@ -153,7 +161,7 @@ export default function OddsVisualizer() {
               </motion.div>
             </AnimatePresence>
 
-            <div className='gap-3 grid grid-cols-1 md:grid-cols-2 w-full max-w-full'>
+            <div className='gap-2 grid grid-cols-1 md:grid-cols-2 w-full max-w-full'>
               {odds.perMatchOdds
                 .filter(({ matchCount }) => matchCount > 0) // Filter out 0 matches
                 .map(
@@ -184,14 +192,14 @@ export default function OddsVisualizer() {
                     return (
                       <motion.div
                         key={matchCount}
-                        className='border p-3 rounded-lg shadow-sm bg-card hover:bg-accent/5'
+                        className='border p-2 rounded-lg shadow-sm bg-card hover:bg-accent/5'
                         variants={oddsItemVariants}
                         initial='hidden'
                         animate='visible'
                         whileHover='hover'
                         custom={index}
                       >
-                        <div className='flex items-center justify-between mb-1'>
+                        <div className='flex items-center justify-between mb-0.5'>
                           <p className='font-semibold text-lg'>
                             {matchCount} matches
                           </p>
@@ -237,7 +245,7 @@ export default function OddsVisualizer() {
                             exit='exit'
                             variants={numberVariants}
                             className={cn(
-                              "mt-1 text-sm font-medium",
+                              "mt-0.5 text-sm font-medium",
                               adjustedChanceIncreased
                                 ? "text-emerald-500"
                                 : adjustedChanceDecreased

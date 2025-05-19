@@ -79,7 +79,7 @@ export function NumberSettings() {
   }
 
   return (
-    <Card className='w-full h-full max-w-md mb-6'>
+    <Card className='w-full h-full mb-4'>
       <CardHeader>
         <CardTitle>Number Settings</CardTitle>
         <CardDescription>
