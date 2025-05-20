@@ -4,13 +4,11 @@ import "./App.css"
 import { NumberSettings } from "@/components/custom/NumberSettings"
 import { NumberDisplay } from "@/components/custom/NumberDisplay"
 import { StatusBar } from "@/components/custom/StatusBar"
-import { ThemeToggle } from "@/components/custom/ThemeToggle"
-import { HistoryButton } from "@/components/custom/HistoryButton"
 import OddsVisualizer from "./components/custom/OddsVisualizer"
 import { TryYourLuck } from "@/components/custom/TryYourLuck"
 import ErrorBoundary from "@/components/custom/ErrorBoundary"
 import SimulationErrorBoundary from "@/components/custom/SimulationErrorBoundary"
-import { GroupIntegration } from "@/components/custom/GroupIntegration"
+import { FloatingDockWrapper } from "@/components/custom/FloatingDockWrapper"
 
 // Import theme provider
 import { ThemeProvider } from "@/components/theme-provider"
@@ -107,12 +105,9 @@ function App() {
         animate='visible'
       >
         <Toaster />
-        <div className='fixed top-4 right-4 flex gap-2'>
-          <HistoryButton />
-          <ErrorBoundary boundary='ThemeToggle'>
-            <ThemeToggle />
-          </ErrorBoundary>
-        </div>
+        <ErrorBoundary boundary='FloatingDock'>
+          <FloatingDockWrapper />
+        </ErrorBoundary>
         <p className='font-semibold'>luck's</p>
         <motion.div
           className='lg:text-5xl md:text-4xl text-3xl font-bold mb-6 text-center'
@@ -129,7 +124,6 @@ function App() {
             custom={0}
           >
             <ErrorBoundary boundary='NumberGenerator'>
-              <GroupIntegration />
               <NumberSettings />
               <NumberDisplay />
               <StatusBar />

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useRef, useEffect } from "react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
+  AnimatedDialog as Dialog,
+  AnimatedDialogContent as DialogContent,
+  AnimatedDialogHeader as DialogHeader,
+  AnimatedDialogTitle as DialogTitle,
+  AnimatedDialogDescription as DialogDescription,
+  AnimatedDialogFooter as DialogFooter,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -179,22 +179,24 @@ export function HistoryDialog({ open, onOpenChange }: HistoryDialogProps) {
               <div ref={listContainerRef} className='h-[45vh] relative'>
                 {filteredEntries.length > 0 ? (
                   listDimensions.height > 0 && (
-                    <List
-                      height={listDimensions.height}
-                      width={listDimensions.width}
-                      itemCount={filteredEntries.length}
-                      itemSize={150} // Approximate height of each item
-                      overscanCount={3} // Number of items to render outside of the visible area
-                      className='scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent'
-                    >
-                      {({ index, style }) => (
-                        <HistoryItem
-                          entry={filteredEntries[index]}
-                          index={index}
-                          style={style}
-                        />
-                      )}
-                    </List>
+                    <ScrollFade className='h-full w-full rounded-md'>
+                      <List
+                        height={listDimensions.height}
+                        width={listDimensions.width}
+                        itemCount={filteredEntries.length}
+                        itemSize={150} // Approximate height of each item
+                        overscanCount={3} // Number of items to render outside of the visible area
+                        className='scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent'
+                      >
+                        {({ index, style }) => (
+                          <HistoryItem
+                            entry={filteredEntries[index]}
+                            index={index}
+                            style={style}
+                          />
+                        )}
+                      </List>
+                    </ScrollFade>
                   )
                 ) : (
                   <div className='flex items-center justify-center h-full text-muted-foreground'>
