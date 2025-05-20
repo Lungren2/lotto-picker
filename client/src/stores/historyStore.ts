@@ -1,9 +1,9 @@
- 
- 
 import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import { persist, createJSONStorage } from "zustand/middleware"
-import { NumberArray } from "@/utils/numberUtils"
+
+// Define our own NumberArray type to avoid import issues
+type NumberArray = number[]
 
 // Define the type for a history entry metadata
 export interface SimulationMetadata {

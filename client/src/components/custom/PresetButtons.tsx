@@ -1,10 +1,18 @@
 import { useState } from "react"
 import { useNumberStore } from "@/stores/numberStore"
-import { usePresetStore, Preset } from "@/stores/presetStore"
+import { usePresetStore } from "@/stores/presetStore"
 import { PresetButton } from "./PresetButton"
 import { PresetConfirmDialog } from "./PresetConfirmDialog"
 import { motion } from "motion/react"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
+
+// Define our own Preset interface to avoid import issues
+interface Preset {
+  name: string
+  quantity: number
+  maxValue: number
+  isSaved: boolean
+}
 
 export function PresetButtons() {
   // Get state and actions from stores

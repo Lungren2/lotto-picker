@@ -1,5 +1,26 @@
 import { useTheme } from "next-themes"
-import { Toaster as Sonner, toast as sonnerToast, ToasterProps } from "sonner"
+import { Toaster as Sonner, toast as sonnerToast } from "sonner"
+
+// Define our own ToasterProps interface to avoid import issues
+export interface ToasterProps {
+  theme?: "light" | "dark" | "system"
+  position?:
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right"
+    | "top-center"
+    | "bottom-center"
+  hotkey?: string
+  richColors?: boolean
+  expand?: boolean
+  duration?: number
+  visibleToasts?: number
+  closeButton?: boolean
+  offset?: string | number
+  dir?: "rtl" | "ltr" | "auto"
+  [key: string]: any
+}
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()

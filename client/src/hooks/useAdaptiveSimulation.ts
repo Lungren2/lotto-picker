@@ -1,8 +1,19 @@
 import { useState, useEffect, useRef, useCallback } from "react"
-import {
-  SimulationSettings,
-  calculateAcceleratedDelay,
-} from "@/stores/simulationStore"
+import { calculateAcceleratedDelay } from "@/stores/simulationStore"
+
+// Define our own SimulationSettings interface to avoid import issues
+interface SimulationSettings {
+  maxAttempts?: number
+  speed: "slow" | "medium" | "fast" | "max"
+  autoStart?: boolean
+  enableBackgroundProcessing?: boolean
+  enableNotifications?: boolean
+  notificationFrequency?: number
+  enableAcceleration: boolean
+  minSpeed: number
+  maxSpeed: number
+  accelerationFactor: number
+}
 
 interface UseAdaptiveSimulationProps {
   onSimulationStep: () => boolean // Return true when simulation should stop

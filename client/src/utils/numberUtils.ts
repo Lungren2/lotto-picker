@@ -1,7 +1,7 @@
+import { getDefaultRNG, MersenneTwister } from "./mersenneTwister"
+
 // Define types for our application
 export type NumberArray = number[]
-
-import { getDefaultRNG, MersenneTwister } from "./mersenneTwister"
 
 /**
  * Generates a random set of numbers from the available pool

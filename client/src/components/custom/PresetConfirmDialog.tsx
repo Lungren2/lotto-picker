@@ -12,7 +12,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { motion, AnimatePresence } from "motion/react"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
-import { Preset } from "@/stores/presetStore"
+
+// Define our own Preset interface to avoid import issues
+interface Preset {
+  name: string
+  quantity: number
+  maxValue: number
+  isSaved: boolean
+}
 
 interface PresetConfirmDialogProps {
   open: boolean

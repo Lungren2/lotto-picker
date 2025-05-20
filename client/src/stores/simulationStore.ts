@@ -2,10 +2,12 @@
 import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import { persist, createJSONStorage } from "zustand/middleware"
-import { NumberArray } from "@/utils/numberUtils"
 import { useHistoryStore } from "./historyStore"
 import { generateSet } from "@/utils/numberUtils"
 import { MersenneTwister, createRNG } from "@/utils/mersenneTwister"
+
+// Define our own NumberArray type to avoid import issues
+type NumberArray = number[]
 
 // Define the simulation status type
 export type SimulationStatus = "idle" | "running" | "paused" | "completed"

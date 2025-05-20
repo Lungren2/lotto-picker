@@ -113,7 +113,7 @@ function App() {
             <ThemeToggle />
           </ErrorBoundary>
         </div>
-        luck's
+        <p className='font-semibold'>luck's</p>
         <motion.div
           className='lg:text-5xl md:text-4xl text-3xl font-bold mb-6 text-center'
           variants={titleVariants}

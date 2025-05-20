@@ -1,12 +1,11 @@
 import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import { persist, createJSONStorage } from "zustand/middleware"
-import {
-  NumberArray,
-  generateSet,
-  getAvailableNumbers,
-} from "@/utils/numberUtils"
+import { generateSet, getAvailableNumbers } from "@/utils/numberUtils"
 import { useHistoryStore } from "./historyStore"
+
+// Define our own NumberArray type to avoid import issues
+type NumberArray = number[]
 
 // Define the store state type
 interface NumberState {
