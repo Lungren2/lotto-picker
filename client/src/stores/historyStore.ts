@@ -5,6 +5,11 @@ import { persist, createJSONStorage } from "zustand/middleware"
 // Define our own NumberArray type to avoid import issues
 type NumberArray = number[]
 
+// Define SyncManager interface for TypeScript
+interface SyncManager {
+  register(tag: string): Promise<void>
+}
+
 // Define the type for a history entry metadata
 export interface SimulationMetadata {
   type: "simulation"
@@ -35,7 +40,12 @@ interface HistoryState {
   filteredEntries: HistoryEntry[]
 
   // Actions
-  addEntry: (numbers: NumberArray, quantity: number, maxValue: number) => void
+  addEntry: (
+    numbers: NumberArray,
+    quantity: number,
+    maxValue: number,
+    metadata?: SimulationMetadata
+  ) => void
   setFilter: (filter: string) => void
   clearHistory: () => void
 }
@@ -96,13 +106,22 @@ export const useHistoryStore = create<HistoryState>()(
             // Try to register for background sync
             navigator.serviceWorker.ready
               .then((registration) => {
-                registration.sync
-                  .register("sync-history")
-                  .catch((err) =>
-                    console.error("Background sync registration failed:", err)
-                  )
+                // Check if sync is available in the registration
+                const syncManager =
+                  "sync" in registration
+                    ? (registration.sync as SyncManager)
+                    : null
+                if (syncManager) {
+                  syncManager
+                    .register("sync-history")
+                    .catch((err: Error) =>
+                      console.error("Background sync registration failed:", err)
+                    )
+                }
               })
-              .catch((err) => console.error("Service worker not ready:", err))
+              .catch((err: Error) =>
+                console.error("Service worker not ready:", err)
+              )
           }
         })
       },

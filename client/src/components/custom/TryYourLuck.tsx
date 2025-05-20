@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef, useCallback } from "react"
 import {
   Card,
@@ -109,24 +108,13 @@ export function TryYourLuck() {
   // Listen for simulation completion to trigger confetti
   useEffect(() => {
     // Subscribe to store changes to detect when a match is found
-    const unsubscribe = useSimulationStore.subscribe(
-      (state) => [state.status, state.bestMatch.count],
-      ([status, matchCount], prevState) => {
-        const prevStatus = prevState[0]
-        const prevMatchCount = prevState[1]
-
-        // If the simulation just completed and we have a perfect match
-        if (
-          status === "completed" &&
-          prevStatus === "running" &&
-          matchCount === quantity &&
-          matchCount > prevMatchCount
-        ) {
-          // Show confetti celebration
-          triggerConfetti()
-        }
+    const unsubscribe = useSimulationStore.subscribe((state) => {
+      // Check if the simulation just completed and we have a perfect match
+      if (state.status === "completed" && state.bestMatch.count === quantity) {
+        // Show confetti celebration
+        triggerConfetti()
       }
-    )
+    })
 
     return unsubscribe
   }, [quantity, triggerConfetti])
@@ -247,7 +235,12 @@ export function TryYourLuck() {
         </CardHeader>
 
         <CardContent className='space-y-4 w-full max-w-full overflow-hidden'>
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+          <Tabs
+            value={activeTab}
+            onValueChange={(v: string) =>
+              setActiveTab(v as "winning" | "settings" | "background")
+            }
+          >
             <TabsList className='w-full mb-4 flex-wrap gap-2 sm:flex-nowrap'>
               <TabsTrigger
                 value='winning'

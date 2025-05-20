@@ -11,7 +11,7 @@ export interface ToasterProps {
     | "bottom-right"
     | "top-center"
     | "bottom-center"
-  hotkey?: string
+  hotkey?: string[]
   richColors?: boolean
   expand?: boolean
   duration?: number
@@ -19,7 +19,9 @@ export interface ToasterProps {
   closeButton?: boolean
   offset?: string | number
   dir?: "rtl" | "ltr" | "auto"
-  [key: string]: any
+  className?: string
+  style?: React.CSSProperties
+  toastOptions?: Record<string, unknown>
 }
 
 const Toaster = ({ ...props }: ToasterProps) => {

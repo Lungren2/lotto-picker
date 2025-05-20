@@ -166,13 +166,10 @@ export function useSimulation({
   // Subscribe to store changes to force re-renders
   useEffect(() => {
     // This effect will run whenever the simulation state changes
-    const unsubscribe = useSimulationStore.subscribe(
-      (state) => [state.currentAttempt, state.bestMatch, state.status],
-      () => {
-        // Force a re-render when these values change
-        setForceUpdate((prev) => prev + 1)
-      }
-    )
+    const unsubscribe = useSimulationStore.subscribe(() => {
+      // Force a re-render when the store changes
+      setForceUpdate((prev) => prev + 1)
+    })
 
     return unsubscribe
   }, [])

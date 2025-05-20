@@ -3,12 +3,12 @@ import { calculateAcceleratedDelay } from "@/stores/simulationStore"
 
 // Define our own SimulationSettings interface to avoid import issues
 interface SimulationSettings {
-  maxAttempts?: number
+  maxAttempts: number
   speed: "slow" | "medium" | "fast" | "max"
-  autoStart?: boolean
-  enableBackgroundProcessing?: boolean
-  enableNotifications?: boolean
-  notificationFrequency?: number
+  autoStart: boolean
+  enableBackgroundProcessing: boolean
+  enableNotifications: boolean
+  notificationFrequency: number
   enableAcceleration: boolean
   minSpeed: number
   maxSpeed: number

@@ -1,9 +1,9 @@
-import React, { ComponentType, ReactNode } from "react"
+import type { ComponentType, ReactNode } from "react"
 import ErrorBoundary from "./ErrorBoundary"
 
 /**
  * Higher-order component that wraps a component with an ErrorBoundary
- * 
+ *
  * @param Component - The component to wrap
  * @param boundary - The name of the boundary (used for logging)
  * @param fallback - Optional custom fallback UI

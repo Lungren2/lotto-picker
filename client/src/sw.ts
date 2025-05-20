@@ -1,13 +1,20 @@
 /// <reference lib="webworker" />
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
+// Define missing event types
+interface SyncEvent extends Event {
+  readonly tag: string
+  waitUntil(promise: Promise<unknown>): void
+}
+
+interface PeriodicSyncEvent extends Event {
+  readonly tag: string
+  waitUntil(promise: Promise<unknown>): void
+}
 import { clientsClaim } from "workbox-core"
 import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching"
 import { registerRoute } from "workbox-routing"
-import {
-  StaleWhileRevalidate,
-  CacheFirst,
-  NetworkFirst,
-} from "workbox-strategies"
+import { StaleWhileRevalidate, CacheFirst } from "workbox-strategies"
 import { ExpirationPlugin } from "workbox-expiration"
 import { CacheableResponsePlugin } from "workbox-cacheable-response"
 
@@ -95,14 +102,22 @@ self.addEventListener("fetch", (event) => {
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request).catch(() => {
-        return caches.match(offlineFallbackPage)
+        return caches.match(offlineFallbackPage).then((response) => {
+          return (
+            response ||
+            new Response("Offline page not found", {
+              status: 503,
+              statusText: "Service Unavailable",
+            })
+          )
+        })
       })
     )
   }
 })
 
 // Listen for messages from the client
-self.addEventListener("message", (event) => {
+self.addEventListener("message", (event: ExtendableMessageEvent) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting()
   }
@@ -110,7 +125,7 @@ self.addEventListener("message", (event) => {
   // Handle simulation messages
   if (event.data && event.data.type === "SIMULATION_UPDATE") {
     // Update any UI or state as needed
-    const clients = self.clients
+    self.clients
       .matchAll({
         type: "window",
         includeUncontrolled: true,
@@ -127,11 +142,12 @@ self.addEventListener("message", (event) => {
 })
 
 // Background sync for offline actions
-self.addEventListener("sync", (event) => {
-  if (event.tag === "sync-history") {
-    event.waitUntil(syncHistory())
+self.addEventListener("sync", ((event: Event) => {
+  const syncEvent = event as SyncEvent
+  if (syncEvent.tag === "sync-history") {
+    syncEvent.waitUntil(syncHistory())
   }
-})
+}) as EventListener)
 
 // Function to sync history data when coming back online
 async function syncHistory() {
@@ -142,25 +158,23 @@ async function syncHistory() {
     if (historyData) {
       // In a real app, you might send this data to a server
       // Notify clients that history has been synced
-      self.clients.matchAll({ type: "window" }).then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({
-            type: "HISTORY_SYNCED",
-            success: true,
-          })
+      const clients = await self.clients.matchAll({ type: "window" })
+      clients.forEach((client) => {
+        client.postMessage({
+          type: "HISTORY_SYNCED",
+          success: true,
         })
       })
     }
     return Promise.resolve()
   } catch (error) {
     // Notify clients of the error
-    self.clients.matchAll({ type: "window" }).then((clients) => {
-      clients.forEach((client) => {
-        client.postMessage({
-          type: "HISTORY_SYNCED",
-          success: false,
-          error: error.message,
-        })
+    const clients = await self.clients.matchAll({ type: "window" })
+    clients.forEach((client) => {
+      client.postMessage({
+        type: "HISTORY_SYNCED",
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
       })
     })
     return Promise.reject(error)
@@ -168,11 +182,12 @@ async function syncHistory() {
 }
 
 // Periodic sync to keep data fresh (if supported)
-self.addEventListener("periodicsync", (event) => {
-  if (event.tag === "refresh-data") {
-    event.waitUntil(refreshData())
+self.addEventListener("periodicsync", ((event: Event) => {
+  const periodicSyncEvent = event as PeriodicSyncEvent
+  if (periodicSyncEvent.tag === "refresh-data") {
+    periodicSyncEvent.waitUntil(refreshData())
   }
-})
+}) as EventListener)
 
 // Function to refresh data periodically
 async function refreshData() {
@@ -185,10 +200,10 @@ async function refreshData() {
 }
 
 // Handle notification clicks
-self.addEventListener("notificationclick", (event) => {
+self.addEventListener("notificationclick", (event: NotificationEvent) => {
   const notification = event.notification
   const action = event.action
-  const data = notification.data
+  const data = notification.data as { url?: string } | undefined
 
   // Close the notification
   notification.close()
@@ -198,18 +213,20 @@ self.addEventListener("notificationclick", (event) => {
     // Open the app
     if (data && data.url) {
       event.waitUntil(
-        self.clients.matchAll({ type: "window" }).then((clientList) => {
+        (async () => {
+          const clientList = await self.clients.matchAll({ type: "window" })
           // Check if there is already a window/tab open with the target URL
           for (const client of clientList) {
             if (client.url === data.url && "focus" in client) {
-              return client.focus()
+              return (client as WindowClient).focus()
             }
           }
           // If no window/tab is open, open a new one
-          if (self.clients.openWindow) {
+          if (self.clients.openWindow && data.url) {
             return self.clients.openWindow(data.url)
           }
-        })
+          return undefined
+        })()
       )
     }
   }
@@ -217,16 +234,18 @@ self.addEventListener("notificationclick", (event) => {
   // If no action or default action, just open the app
   if (!action || action === "default") {
     event.waitUntil(
-      self.clients.matchAll({ type: "window" }).then((clientList) => {
+      (async () => {
+        const clientList = await self.clients.matchAll({ type: "window" })
         for (const client of clientList) {
           if ("focus" in client) {
-            return client.focus()
+            return (client as WindowClient).focus()
           }
         }
         if (self.clients.openWindow) {
           return self.clients.openWindow("/")
         }
-      })
+        return undefined
+      })()
     )
   }
 })

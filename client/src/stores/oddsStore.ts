@@ -88,17 +88,23 @@ export const useOddsStore = create<OddsState>()(
               const newOdds = data.odds
 
               // Add previous values for comparison
-              const perMatchOdds = newOdds.perMatchOdds.map((item) => {
-                const prevValues = currentOdds.perMatchOdds.find(
-                  (prev) => prev.matchCount === item.matchCount
-                )
+              const perMatchOdds = newOdds.perMatchOdds.map(
+                (item: {
+                  matchCount: number
+                  singleChance: number
+                  adjustedChance: number
+                }) => {
+                  const prevValues = currentOdds.perMatchOdds.find(
+                    (prev) => prev.matchCount === item.matchCount
+                  )
 
-                return {
-                  ...item,
-                  prevSingleChance: prevValues?.singleChance,
-                  prevAdjustedChance: prevValues?.adjustedChance,
+                  return {
+                    ...item,
+                    prevSingleChance: prevValues?.singleChance,
+                    prevAdjustedChance: prevValues?.adjustedChance,
+                  }
                 }
-              })
+              )
 
               // Update the store with new odds
               set((state) => {
@@ -167,7 +173,7 @@ export const useOddsStore = create<OddsState>()(
               const adjusted = adjustedProbability(prob, numSets)
 
               const prevValues = currentOdds.perMatchOdds.find(
-                (item) => item.matchCount === k
+                (item: { matchCount: number }) => item.matchCount === k
               )
 
               perMatchOdds.push({

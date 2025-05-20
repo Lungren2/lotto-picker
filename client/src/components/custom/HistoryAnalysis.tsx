@@ -276,7 +276,7 @@ export function HistoryAnalysis() {
                     Number Frequency Heatmap
                   </h3>
                   <div className='grid grid-cols-10 gap-1'>
-                    {frequencyData.map(({ number, count, percentage }) => {
+                    {frequencyData.map(({ number, percentage }) => {
                       // Calculate color intensity based on frequency
                       const intensity = Math.min(
                         100,

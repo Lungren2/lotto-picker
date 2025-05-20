@@ -9,6 +9,14 @@ import { MersenneTwister, createRNG } from "@/utils/mersenneTwister"
 // Define our own NumberArray type to avoid import issues
 type NumberArray = number[]
 
+// Define extended NotificationOptions interface to include actions
+interface ExtendedNotificationOptions extends NotificationOptions {
+  actions?: Array<{
+    action: string
+    title: string
+  }>
+}
+
 // Define the simulation status type
 export type SimulationStatus = "idle" | "running" | "paused" | "completed"
 
@@ -212,7 +220,7 @@ export const useSimulationStore = create<SimulationState>()(
         })
       },
 
-      startSimulation: (quantity: number, maxValue: number) => {
+      startSimulation: (_quantity: number, _maxValue: number) => {
         // Reset current attempt and best match
         set((state) => {
           state.currentAttempt = 0
@@ -338,7 +346,7 @@ export const useSimulationStore = create<SimulationState>()(
                     title: "Open App",
                   },
                 ],
-              })
+              } as ExtendedNotificationOptions)
             })
           }
         }
@@ -368,7 +376,7 @@ export const useSimulationStore = create<SimulationState>()(
                 data: {
                   url: window.location.href,
                 },
-              })
+              } as ExtendedNotificationOptions)
             })
           }
         }

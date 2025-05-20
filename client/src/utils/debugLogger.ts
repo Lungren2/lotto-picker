@@ -7,14 +7,17 @@
  * Logs events to localStorage and console with support for different log levels.
  */
 
-// Define log levels
-export enum LogLevel {
-  DEBUG = "DEBUG",
-  INFO = "INFO",
-  WARN = "WARN",
-  ERROR = "ERROR",
-  FATAL = "FATAL",
-}
+// Define log levels as a const object instead of enum
+export const LogLevel = {
+  DEBUG: "DEBUG",
+  INFO: "INFO",
+  WARN: "WARN",
+  ERROR: "ERROR",
+  FATAL: "FATAL",
+} as const
+
+// Define the LogLevel type
+export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel]
 
 // Interface for log entry
 interface LogEntry {

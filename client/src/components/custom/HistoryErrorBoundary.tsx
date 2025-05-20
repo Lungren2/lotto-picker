@@ -1,7 +1,13 @@
-import React from "react"
+import type { ReactNode } from "react"
 import ErrorBoundary from "./ErrorBoundary"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { AlertTriangle, RefreshCw, Trash2 } from "lucide-react"
 import { motion } from "motion/react"
 import { useHistoryStore } from "@/stores/historyStore"
@@ -9,7 +15,7 @@ import { toast } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 
 interface HistoryErrorBoundaryProps {
-  children: React.ReactNode
+  children: ReactNode
   className?: string
 }
 
@@ -17,63 +23,64 @@ interface HistoryErrorBoundaryProps {
  * Specialized error boundary for the History feature with a custom fallback UI
  * that includes options to clear history data
  */
-const HistoryErrorBoundary: React.FC<HistoryErrorBoundaryProps> = ({ 
+const HistoryErrorBoundary = ({
   children,
-  className
-}) => {
-  // Get the reset function from the history store
-  const resetHistory = useHistoryStore(state => state.resetHistory)
-  
+  className,
+}: HistoryErrorBoundaryProps) => {
+  // Get the clear function from the history store
+  const clearHistory = useHistoryStore((state) => state.clearHistory)
+
   // Custom fallback UI for history errors
   const HistoryErrorFallback = () => {
     const handleClearHistory = () => {
-      // Reset the history store
-      resetHistory()
-      
+      // Clear the history store
+      clearHistory()
+
       // Show a toast notification
       toast.success("History cleared", {
-        description: "All history data has been reset."
+        description: "All history data has been reset.",
       })
-      
+
       // Force a page reload to ensure clean state
       window.location.reload()
     }
-    
+
     return (
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn("w-full", className)}
       >
-        <Card className="border-destructive/50 bg-destructive/5">
+        <Card className='border-destructive/50 bg-destructive/5'>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-destructive">
-              <AlertTriangle className="h-5 w-5" />
+            <CardTitle className='flex items-center gap-2 text-destructive'>
+              <AlertTriangle className='h-5 w-5' />
               History Error
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              There was a problem loading your history data. This could be due to corrupted data.
+            <p className='text-sm text-muted-foreground'>
+              There was a problem loading your history data. This could be due
+              to corrupted data.
             </p>
           </CardContent>
-          <CardFooter className="flex gap-2">
+          <CardFooter className='flex gap-2'>
             <Button
-              variant="outline"
-              size="sm"
+              variant='outline'
+              size='sm'
               onClick={() => window.location.reload()}
-              className="gap-1"
+              className='gap-1'
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className='h-4 w-4' />
               Reload
             </Button>
             <Button
-              variant="destructive"
-              size="sm"
+              variant='destructive'
+              size='sm'
               onClick={handleClearHistory}
-              className="gap-1"
+              className='gap-1'
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className='h-4 w-4' />
               Clear History
             </Button>
           </CardFooter>
@@ -81,10 +88,10 @@ const HistoryErrorBoundary: React.FC<HistoryErrorBoundaryProps> = ({
       </motion.div>
     )
   }
-  
+
   return (
-    <ErrorBoundary 
-      boundary="History" 
+    <ErrorBoundary
+      boundary='History'
       fallback={<HistoryErrorFallback />}
       className={className}
     >

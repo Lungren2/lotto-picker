@@ -110,9 +110,6 @@ export function HistoryDialog({ open, onOpenChange }: HistoryDialogProps) {
   const { entries, filteredEntries, filter, setFilter, clearHistory } =
     useHistoryStore()
 
-  // Check if user prefers reduced motion
-  const prefersReducedMotion = useReducedMotion()
-
   // State for active tab
   const [activeTab, setActiveTab] = useState("history")
 

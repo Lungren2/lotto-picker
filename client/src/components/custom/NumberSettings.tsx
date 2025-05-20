@@ -25,7 +25,6 @@ export function NumberSettings() {
     quantity,
     maxValue,
     hasEnoughNumbers,
-    remainingCount,
     setQuantity,
     setMaxValue,
     generateNumbers,
@@ -33,8 +32,7 @@ export function NumberSettings() {
   } = useNumberStore()
 
   // Track previous state to animate transitions
-  const [prevHasEnoughNumbers, setPrevHasEnoughNumbers] =
-    useState(hasEnoughNumbers)
+  const [_, setPrevHasEnoughNumbers] = useState(hasEnoughNumbers)
 
   // Update previous state when current state changes
   useEffect(() => {

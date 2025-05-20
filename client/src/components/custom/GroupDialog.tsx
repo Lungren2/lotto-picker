@@ -27,7 +27,7 @@ interface GroupDialogProps {
 }
 
 export function GroupDialog({ open, onOpenChange }: GroupDialogProps) {
-  const { currentGroup, groupNumberSets, disconnect, createGroup } =
+  const { currentGroup, groupNumberSets, groupMembers, disconnect } =
     useGroupStore()
   const [activeTab, setActiveTab] = useState(currentGroup ? "members" : "join")
 
@@ -92,16 +92,17 @@ export function GroupDialog({ open, onOpenChange }: GroupDialogProps) {
               <TabsContent value='members' className='space-y-4'>
                 <ScrollFade className='h-[45vh] rounded-md'>
                   <div className='space-y-2'>
-                    {currentGroup.members && currentGroup.members.length > 0 ? (
-                      currentGroup.members.map((member) => (
-                        <Card key={member.id} className='p-4'>
+                    {groupMembers && groupMembers.length > 0 ? (
+                      groupMembers.map((member) => (
+                        <Card key={member.userId} className='p-4'>
                           <div className='flex justify-between items-center'>
                             <div>
                               <p className='font-medium'>
                                 {member.displayName}
                               </p>
                               <p className='text-sm text-muted-foreground'>
-                                {member.id === currentGroup.ownerId
+                                {/* Assuming the first member is the owner for now */}
+                                {member === groupMembers[0]
                                   ? "Owner"
                                   : "Member"}
                               </p>
