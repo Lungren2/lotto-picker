@@ -1,5 +1,5 @@
+ 
 import { useTheme } from "@/components/theme-provider"
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 
 // Import Framer Motion
@@ -7,7 +7,6 @@ import { motion } from "motion/react"
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
-  const [isHovered, setIsHovered] = useState(false)
 
   // Toggle between light and dark mode
   const toggleTheme = () => {

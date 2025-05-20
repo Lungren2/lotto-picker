@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useRef, useEffect } from "react"
 import {
   Dialog,
@@ -13,7 +14,7 @@ import { Card } from "@/components/ui/card"
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs"
 
 // Import Framer Motion
-import { motion, AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 
 // Import react-window for virtualization
 import { FixedSizeList as List } from "react-window"

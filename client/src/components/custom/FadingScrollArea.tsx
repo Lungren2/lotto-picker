@@ -1,4 +1,10 @@
-import React, { type ReactNode, useState, useEffect, useRef } from "react"
+import React, {
+  type ReactNode,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react"
 import { cn } from "@/lib/utils"
 
 export interface ScrollFadeProps {
@@ -28,30 +34,33 @@ export function ScrollFade({
   const [isAtRight, setIsAtRight] = useState(false)
   const scrollableRef = useRef<HTMLDivElement>(null)
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.currentTarget
-    let newIsAtTop = false
-    let newIsAtBottom = false
-    let newIsAtLeft = false
-    let newIsAtRight = false
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget
+      let newIsAtTop = false
+      let newIsAtBottom = false
+      let newIsAtLeft = false
+      let newIsAtRight = false
 
-    if (direction.includes("y")) {
-      const { scrollTop, scrollHeight, clientHeight } = target
-      newIsAtTop = scrollTop <= 1 // Allow 1px threshold
-      newIsAtBottom = scrollTop + clientHeight >= scrollHeight - 1
-    }
+      if (direction.includes("y")) {
+        const { scrollTop, scrollHeight, clientHeight } = target
+        newIsAtTop = scrollTop <= 1 // Allow 1px threshold
+        newIsAtBottom = scrollTop + clientHeight >= scrollHeight - 1
+      }
 
-    if (direction.includes("x")) {
-      const { scrollLeft, scrollWidth, clientWidth } = target
-      newIsAtLeft = scrollLeft <= 1
-      newIsAtRight = scrollLeft + clientWidth >= scrollWidth - 1
-    }
+      if (direction.includes("x")) {
+        const { scrollLeft, scrollWidth, clientWidth } = target
+        newIsAtLeft = scrollLeft <= 1
+        newIsAtRight = scrollLeft + clientWidth >= scrollWidth - 1
+      }
 
-    setIsAtTop(newIsAtTop)
-    setIsAtBottom(newIsAtBottom)
-    setIsAtLeft(newIsAtLeft)
-    setIsAtRight(newIsAtRight)
-  }
+      setIsAtTop(newIsAtTop)
+      setIsAtBottom(newIsAtBottom)
+      setIsAtLeft(newIsAtLeft)
+      setIsAtRight(newIsAtRight)
+    },
+    [direction, setIsAtTop, setIsAtBottom, setIsAtLeft, setIsAtRight]
+  )
 
   useEffect(() => {
     const checkInitialPosition = () => {
@@ -70,7 +79,7 @@ export function ScrollFade({
     }
 
     return () => resizeObserver.disconnect()
-  }, [direction])
+  }, [direction, handleScroll])
 
   const fadeVars = {
     "--top-opacity": isAtTop ? 0 : 1,

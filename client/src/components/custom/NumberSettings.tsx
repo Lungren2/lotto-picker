@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import {

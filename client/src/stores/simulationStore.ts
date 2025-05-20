@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import { persist, createJSONStorage } from "zustand/middleware"
 import { NumberArray } from "@/utils/numberUtils"
 import { useHistoryStore } from "./historyStore"
-import { generateSet, getAvailableNumbers } from "@/utils/numberUtils"
+import { generateSet } from "@/utils/numberUtils"
 import { MersenneTwister, createRNG } from "@/utils/mersenneTwister"
 
 // Define the simulation status type

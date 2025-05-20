@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { AlertTriangle, RefreshCw } from "lucide-react"
 import { motion } from "motion/react"
 import { toast } from "@/components/ui/sonner"
-import { LogLevel } from "@/utils/debugLogger"
 import { cn } from "@/lib/utils"
 
 // Import the enhanced debug logger

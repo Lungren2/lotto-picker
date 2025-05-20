@@ -256,7 +256,7 @@ export function combinations(n: number, r: number): number {
       // Cache the result
       combinationsCache[cacheKey] = result
       return result
-    } catch (fallbackError) {
+    } catch {
       // If all approaches fail, throw a more descriptive error
       throw new Error(
         `Failed to calculate combinations(${n}, ${r}): ${
@@ -380,7 +380,7 @@ export function hypergeometric(
       // Cache the result
       hypergeometricCache[cacheKey] = result
       return result
-    } catch (fallbackError) {
+    } catch {
       // If all approaches fail, throw a more descriptive error
       throw new Error(
         `Failed to calculate hypergeometric(${k}, ${N}, ${K}, ${n}): ${

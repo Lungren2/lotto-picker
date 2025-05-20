@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect, useRef, useCallback } from "react"
 import {
   Card,
   CardHeader,
@@ -13,14 +14,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
-import { motion, AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { useSimulation } from "@/hooks/useSimulation"
 import { useBackgroundSimulation } from "@/hooks/useBackgroundSimulation"
 import { useNumberStore } from "@/stores/numberStore"
 import { useSimulationStore } from "@/stores/simulationStore"
 import { NumberBubble } from "./NumberBubble"
-import { toast } from "@/components/ui/sonner"
 import ReactConfetti from "react-confetti"
 import {
   Play,
@@ -33,10 +33,8 @@ import {
   Settings,
   Clock,
   Target,
-  CheckCircle2,
   XCircle,
   Bell,
-  BellOff,
   Laptop,
   Smartphone,
 } from "lucide-react"
@@ -86,6 +84,28 @@ export function TryYourLuck() {
     currentSpeed: backgroundSpeed,
   } = useBackgroundSimulation({ quantity, maxValue })
 
+  // Function to trigger confetti celebration - defined before it's used in useEffect
+  const triggerConfetti = useCallback(() => {
+    if (prefersReducedMotion) return
+
+    // Generate colors based on the theme
+    const colors = [
+      "var(--primary)",
+      "var(--accent)",
+      "var(--secondary)",
+      "gold",
+      "#FF5555",
+    ]
+
+    setConfettiColors(colors)
+    setShowConfetti(true)
+
+    // Stop confetti after 5 seconds
+    setTimeout(() => {
+      setShowConfetti(false)
+    }, 5000)
+  }, [prefersReducedMotion, setConfettiColors, setShowConfetti])
+
   // Listen for simulation completion to trigger confetti
   useEffect(() => {
     // Subscribe to store changes to detect when a match is found
@@ -109,29 +129,7 @@ export function TryYourLuck() {
     )
 
     return unsubscribe
-  }, [quantity])
-
-  // Function to trigger confetti celebration
-  const triggerConfetti = () => {
-    if (prefersReducedMotion) return
-
-    // Generate colors based on the theme
-    const colors = [
-      "var(--primary)",
-      "var(--accent)",
-      "var(--secondary)",
-      "gold",
-      "#FF5555",
-    ]
-
-    setConfettiColors(colors)
-    setShowConfetti(true)
-
-    // Stop confetti after 5 seconds
-    setTimeout(() => {
-      setShowConfetti(false)
-    }, 5000)
-  }
+  }, [quantity, triggerConfetti])
 
   // State for active tab
   const [activeTab, setActiveTab] = useState<

@@ -110,7 +110,7 @@ export function useSimulation({
   ])
 
   // Use the adaptive simulation hook to handle the simulation loop
-  const { isProcessing, currentSpeed } = useAdaptiveSimulation({
+  const { currentSpeed } = useAdaptiveSimulation({
     onSimulationStep: runSimulationStep,
     isRunning: status === "running",
     speed: settings.speed,

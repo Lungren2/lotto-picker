@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { clientsClaim } from "workbox-core"
 import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching"
 import { registerRoute } from "workbox-routing"

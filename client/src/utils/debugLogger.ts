@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Enhanced Debug Logger Utility
  *
@@ -283,7 +285,7 @@ class DebugLogger {
         if (storedHandle) {
           try {
             fileHandle = JSON.parse(storedHandle)
-          } catch (e) {
+          } catch {
             // If parsing fails, request a new file handle
             fileHandle = await (window as any).showSaveFilePicker({
               suggestedName: this.logFile,

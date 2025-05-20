@@ -211,6 +211,7 @@ export function useBackgroundSimulation({
     quantity,
     maxValue,
     storeStartBackgroundSimulation,
+    storeStopBackgroundSimulation,
     updateFromBackground,
     requestNotificationPermission,
   ])
@@ -226,7 +227,7 @@ export function useBackgroundSimulation({
     toast.info("Background simulation stopped", {
       description: "The simulation has been stopped.",
     })
-  }, [storeStopBackgroundSimulation])
+  }, [storeStopBackgroundSimulation, workerRef])
 
   // Clean up on unmount
   useEffect(() => {

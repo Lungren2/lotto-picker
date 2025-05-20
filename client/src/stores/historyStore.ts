@@ -1,3 +1,5 @@
+ 
+ 
 import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import { persist, createJSONStorage } from "zustand/middleware"
@@ -41,7 +43,7 @@ interface HistoryState {
 // Create the store with Immer and persist middleware
 export const useHistoryStore = create<HistoryState>()(
   persist(
-    immer((set, get) => ({
+    immer((set) => ({
       // Initial state
       entries: [],
       filter: "",
