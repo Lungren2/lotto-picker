@@ -1,0 +1,3 @@
+setup:
+  project: lotto-picker
+  config: stg_api

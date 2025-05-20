@@ -1,8 +1,33 @@
 {
   "tasks": {
-    "dev": "deno run --watch main.ts"
+    "dev": "deno run --allow-net --allow-env --watch main.ts",
+    "start": "deno run --allow-net --allow-env main.ts",
+    "test": "deno test --allow-net --allow-env",
+    "doppler:dev": "doppler run -- deno run --allow-net --allow-env --watch main.ts",
+    "doppler:start": "doppler run -- deno run --allow-net --allow-env main.ts",
+    "doppler:test": "doppler run -- deno test --allow-net --allow-env",
+    "doppler:staging": "doppler run --config-file doppler.staging.yaml -- deno run --allow-net --allow-env main.ts",
+    "doppler:staging:setup": "doppler setup --config-file doppler.staging.yaml",
+    "doppler:prod": "doppler run --config-file doppler.prod.yaml -- deno run --allow-net --allow-env main.ts",
+    "doppler:prod:setup": "doppler setup --config-file doppler.prod.yaml",
+    "doppler:diagnostics": "deno run --allow-run --allow-env scripts/doppler-diagnostics.ts",
+    "doppler:rotate-secrets": "deno run --allow-run --allow-env scripts/rotate-secrets.ts",
+    "doppler:check": "doppler run -- deno run --allow-env test-doppler.ts",
+    "db:init": "deno run --allow-net --allow-env --allow-read scripts/db-init.ts",
+    "db:init:dev": "deno run --allow-net --allow-env --allow-read scripts/db-init.ts --environment=development",
+    "db:init:staging": "deno run --allow-net --allow-env --allow-read scripts/db-init.ts --environment=staging",
+    "db:init:prod": "deno run --allow-net --allow-env --allow-read scripts/db-init.ts --environment=production",
+    "doppler:db:init": "doppler run -- deno run --allow-net --allow-env --allow-read scripts/db-init.ts",
+    "db:info": "deno run --allow-net --allow-env --allow-read scripts/db-manage.ts info",
+    "db:tables": "deno run --allow-net --allow-env --allow-read scripts/db-manage.ts tables",
+    "db:clear": "deno run --allow-net --allow-env --allow-read scripts/db-manage.ts clear",
+    "db:drop": "deno run --allow-net --allow-env --allow-read scripts/db-manage.ts drop",
+    "db:seed": "deno run --allow-net --allow-env --allow-read scripts/db-manage.ts seed",
+    "db:stats": "deno run --allow-net --allow-env --allow-read scripts/db-manage.ts stats",
+    "doppler:db:manage": "doppler run -- deno run --allow-net --allow-env --allow-read scripts/db-manage.ts"
   },
   "imports": {
+    "@neon/serverless": "jsr:@neon/serverless@^1.0.0",
     "@oak/oak": "jsr:@oak/oak@^17.1.4",
     "@std/assert": "jsr:@std/assert@1",
     "zod": "npm:zod@^3.25.7"

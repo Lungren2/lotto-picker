@@ -161,6 +161,36 @@ npm run build
 
 The built files will be in the `dist` directory.
 
+## Deployment
+
+The client application is deployed to Netlify using GitHub Actions. The workflow automatically builds and deploys the application when changes are pushed to the `main` branch.
+
+### Setting Up Netlify Deployment
+
+1. **Create a Netlify Site**:
+   - Create an account on [Netlify](https://www.netlify.com/)
+   - Create a new site from your GitHub repository
+   - Configure the build settings:
+     - Build command: `pnpm build`
+     - Publish directory: `dist`
+
+2. **Generate a Netlify Personal Access Token**:
+   - Go to User Settings > Applications > Personal access tokens
+   - Generate a new token with appropriate permissions
+
+3. **Add Secrets to GitHub**:
+   - Go to your GitHub repository
+   - Navigate to Settings > Secrets and variables > Actions
+   - Add the following repository secrets:
+     - `NETLIFY_AUTH_TOKEN`: Your Netlify personal access token
+     - `NETLIFY_SITE_ID`: Your Netlify site ID (found in site settings)
+     - `VITE_API_URL`: The URL of your API server (for production builds)
+
+4. **GitHub Actions Workflow**:
+   - The workflow file is located at `.github/workflows/client-deploy.yml`
+   - It runs tests, builds the application, and deploys to Netlify
+   - It only runs when changes are made to files in the `client/` directory
+
 ## Usage
 
 1. **Adjust Settings**: Use the sliders to set the quantity of numbers and maximum value

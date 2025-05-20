@@ -10,6 +10,7 @@ import OddsVisualizer from "./components/custom/OddsVisualizer"
 import { TryYourLuck } from "@/components/custom/TryYourLuck"
 import ErrorBoundary from "@/components/custom/ErrorBoundary"
 import SimulationErrorBoundary from "@/components/custom/SimulationErrorBoundary"
+import { GroupIntegration } from "@/components/custom/GroupIntegration"
 
 // Import theme provider
 import { ThemeProvider } from "@/components/theme-provider"
@@ -128,6 +129,7 @@ function App() {
             custom={0}
           >
             <ErrorBoundary boundary='NumberGenerator'>
+              <GroupIntegration />
               <NumberSettings />
               <NumberDisplay />
               <StatusBar />
