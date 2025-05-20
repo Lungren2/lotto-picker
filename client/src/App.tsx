@@ -135,7 +135,7 @@ function App() {
           </motion.div>
 
           {/* Right column - Odds Visualizer and Try Your Luck */}
-          <ScrollFade className='h-[65vh] w-full max-w-full'>
+          <ScrollFade className='h-[70svh] w-full max-w-full'>
             <motion.div
               className='flex flex-col items-center w-full'
               variants={columnVariants}

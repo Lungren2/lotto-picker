@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   Card,
   CardHeader,
@@ -21,6 +21,7 @@ import { useNumberStore } from "@/stores/numberStore"
 import { useSimulationStore } from "@/stores/simulationStore"
 import { NumberBubble } from "./NumberBubble"
 import { toast } from "@/components/ui/sonner"
+import ReactConfetti from "react-confetti"
 import {
   Play,
   Pause,
@@ -46,6 +47,16 @@ export function TryYourLuck() {
 
   // Get simulation settings
   const { settings, updateSettings } = useSimulationStore()
+
+  // State for confetti animation
+  const [showConfetti, setShowConfetti] = useState(false)
+  const [confettiColors, setConfettiColors] = useState<string[]>([])
+
+  // Ref for the container to get dimensions for confetti
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Check if user prefers reduced motion
+  const prefersReducedMotion = useReducedMotion()
 
   // Use the simulation hook
   const {
@@ -75,8 +86,52 @@ export function TryYourLuck() {
     currentSpeed: backgroundSpeed,
   } = useBackgroundSimulation({ quantity, maxValue })
 
-  // Check if user prefers reduced motion
-  const prefersReducedMotion = useReducedMotion()
+  // Listen for simulation completion to trigger confetti
+  useEffect(() => {
+    // Subscribe to store changes to detect when a match is found
+    const unsubscribe = useSimulationStore.subscribe(
+      (state) => [state.status, state.bestMatch.count],
+      ([status, matchCount], prevState) => {
+        const prevStatus = prevState[0]
+        const prevMatchCount = prevState[1]
+
+        // If the simulation just completed and we have a perfect match
+        if (
+          status === "completed" &&
+          prevStatus === "running" &&
+          matchCount === quantity &&
+          matchCount > prevMatchCount
+        ) {
+          // Show confetti celebration
+          triggerConfetti()
+        }
+      }
+    )
+
+    return unsubscribe
+  }, [quantity])
+
+  // Function to trigger confetti celebration
+  const triggerConfetti = () => {
+    if (prefersReducedMotion) return
+
+    // Generate colors based on the theme
+    const colors = [
+      "var(--primary)",
+      "var(--accent)",
+      "var(--secondary)",
+      "gold",
+      "#FF5555",
+    ]
+
+    setConfettiColors(colors)
+    setShowConfetti(true)
+
+    // Stop confetti after 5 seconds
+    setTimeout(() => {
+      setShowConfetti(false)
+    }, 5000)
+  }
 
   // State for active tab
   const [activeTab, setActiveTab] = useState<
@@ -163,11 +218,25 @@ export function TryYourLuck() {
 
   return (
     <motion.div
+      ref={containerRef}
       variants={containerVariants}
       initial='hidden'
       animate='visible'
-      className='w-full max-w-full mx-auto'
+      className='w-full max-w-full mx-auto relative'
     >
+      {/* Confetti animation when a match is found */}
+      {showConfetti && !prefersReducedMotion && (
+        <ReactConfetti
+          width={containerRef.current?.offsetWidth || window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={200}
+          gravity={0.15}
+          colors={confettiColors}
+          tweenDuration={5000}
+        />
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
@@ -186,21 +255,21 @@ export function TryYourLuck() {
                 value='winning'
                 className='flex-1 min-w-[100px] text-xs sm:text-sm'
               >
-                <Target className='h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2' />
+                <Target className='h-3 w-3 sm:h-4 sm:w-4 ' />
                 Winning Set
               </TabsTrigger>
               <TabsTrigger
                 value='settings'
                 className='flex-1 min-w-[100px] text-xs sm:text-sm'
               >
-                <Settings className='h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2' />
+                <Settings className='h-3 w-3 sm:h-4 sm:w-4 ' />
                 Settings
               </TabsTrigger>
               <TabsTrigger
                 value='background'
                 className='flex-1 min-w-[100px] text-xs sm:text-sm'
               >
-                <Smartphone className='h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2' />
+                <Smartphone className='h-3 w-3 sm:h-4 sm:w-4 ' />
                 Background
               </TabsTrigger>
             </TabsList>
@@ -214,6 +283,9 @@ export function TryYourLuck() {
                       number={num}
                       variant='highlight'
                       index={index}
+                      pulseOnRender={
+                        isCompleted && bestMatch.count === quantity
+                      }
                     />
                   ))
                 ) : (
@@ -552,6 +624,11 @@ export function TryYourLuck() {
                       size='sm'
                       variant={
                         winningSet.includes(num) ? "highlight" : "default"
+                      }
+                      pulseOnRender={
+                        isCompleted &&
+                        bestMatch.count === quantity &&
+                        winningSet.includes(num)
                       }
                     />
                   ))}

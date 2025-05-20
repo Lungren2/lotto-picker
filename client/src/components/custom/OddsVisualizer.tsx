@@ -15,12 +15,29 @@ import { useNumberStore } from "@/stores/numberStore"
 import { useOddsStore } from "@/stores/oddsStore"
 
 // Import icons
-import { ArrowUpIcon, ArrowDownIcon, LoaderIcon, ChartBar } from "lucide-react"
+import {
+  ArrowUpIcon,
+  ArrowDownIcon,
+  LoaderIcon,
+  ChartBar,
+  Cpu,
+} from "lucide-react"
+
+// State to track if Web Worker is being used
+import { useState, useEffect } from "react"
 
 export default function OddsVisualizer() {
   // Get state from stores (only what we need)
   const { quantity, maxValue, numSets } = useNumberStore()
-  const { odds } = useOddsStore()
+  const { odds, isCalculating } = useOddsStore()
+
+  // State to track if Web Worker is being used
+  const [isUsingWorker, setIsUsingWorker] = useState<boolean>(false)
+
+  // Check if Web Workers are supported
+  useEffect(() => {
+    setIsUsingWorker(typeof Worker !== "undefined")
+  }, [])
 
   // Check if user prefers reduced motion
   const prefersReducedMotion = useReducedMotion()
@@ -39,7 +56,7 @@ export default function OddsVisualizer() {
     },
     200, // Base delay in milliseconds
     complexityFactor, // Complexity factor (1-10)
-    [quantity, maxValue, numSets]
+    [quantity, maxValue, numSets] // Ensure recalculation when numSets changes
   )
 
   // Enhanced animation variants
@@ -128,20 +145,30 @@ export default function OddsVisualizer() {
                 Odds Summary
               </CardTitle>
 
-              {isDebouncing && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className='text-muted-foreground flex items-center gap-1 text-sm'
-                >
-                  <LoaderIcon className='h-3 w-3 animate-spin' />
-                  <span>Calculating</span>
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {(isDebouncing || isCalculating) && (
+                  <motion.div
+                    key='calculating-indicator'
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className='text-muted-foreground flex items-center gap-1 text-sm'
+                  >
+                    <LoaderIcon className='h-3 w-3 animate-spin' />
+                    <span>{isCalculating ? "Processing" : "Calculating"}</span>
+                    {isCalculating && isUsingWorker && (
+                      <span title='Using Web Worker for better performance'>
+                        <Cpu className='h-3 w-3 ml-1 text-primary' />
+                      </span>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <CardDescription>
-              Statistical probability of matching different quantities
+            <CardDescription className='flex items-center justify-between'>
+              <span>
+                Statistical probability of matching different quantities
+              </span>
             </CardDescription>
           </CardHeader>
           <CardContent className='p-2 sm:p-4 space-y-3 w-full max-w-full overflow-hidden pt-0'>
@@ -161,7 +188,7 @@ export default function OddsVisualizer() {
               </motion.div>
             </AnimatePresence>
 
-            <div className='gap-2 grid grid-cols-1 md:grid-cols-2 w-full max-w-full'>
+            <div className='gap-2 grid grid-cols-1 w-full max-w-full'>
               {odds.perMatchOdds
                 .filter(({ matchCount }) => matchCount > 0) // Filter out 0 matches
                 .map(
@@ -239,7 +266,9 @@ export default function OddsVisualizer() {
 
                         <AnimatePresence mode='wait'>
                           <motion.div
-                            key={`adjusted-${adjustedChance}-${numSets}`}
+                            key={`adjusted-${matchCount}-${numSets}-${adjustedChance.toFixed(
+                              10
+                            )}`}
                             initial='initial'
                             animate='animate'
                             exit='exit'

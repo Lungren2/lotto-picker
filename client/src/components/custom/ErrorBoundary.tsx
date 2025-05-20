@@ -1,5 +1,11 @@
 import React, { Component, ErrorInfo, ReactNode } from "react"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AlertTriangle, RefreshCw } from "lucide-react"
 import { motion } from "motion/react"
@@ -7,8 +13,8 @@ import { toast } from "@/components/ui/sonner"
 import { LogLevel } from "@/utils/debugLogger"
 import { cn } from "@/lib/utils"
 
-// Import the debug logger
-import { debugLogger } from "@/utils/debugLogger"
+// Import the enhanced debug logger
+import { error as logError } from "@/utils/debugLogger"
 
 // Define props for the ErrorBoundary component
 interface ErrorBoundaryProps {
@@ -52,14 +58,17 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   // This lifecycle method is called after an error has been thrown by a descendant component
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // Log the error to our logging service
-    debugLogger.error(
+    // Log the error to our enhanced logging service
+    logError(
       this.props.boundary,
       `Error caught by ErrorBoundary: ${error.message}`,
       {
-        error: error.toString(),
         componentStack: errorInfo.componentStack,
-      }
+        errorName: error.name,
+        timestamp: new Date().toISOString(),
+        boundary: this.props.boundary,
+      },
+      error // Pass the actual error object for stack trace
     )
 
     // Update state with error details
@@ -70,6 +79,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     // Show a toast notification
     toast.error("An error occurred", {
       description: `There was a problem in the ${this.props.boundary} section.`,
+      duration: 5000, // Show for longer
     })
 
     // You could also send to an error reporting service here
@@ -108,26 +118,26 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
           animate={{ opacity: 1, y: 0 }}
           className={cn("w-full", className)}
         >
-          <Card className="border-destructive/50 bg-destructive/5">
+          <Card className='border-destructive/50 bg-destructive/5'>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-destructive">
-                <AlertTriangle className="h-5 w-5" />
+              <CardTitle className='flex items-center gap-2 text-destructive'>
+                <AlertTriangle className='h-5 w-5' />
                 Something went wrong
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
+              <p className='text-sm text-muted-foreground'>
                 {error?.message || "An unexpected error occurred"}
               </p>
             </CardContent>
             <CardFooter>
               <Button
-                variant="outline"
-                size="sm"
+                variant='outline'
+                size='sm'
                 onClick={this.handleReset}
-                className="gap-1"
+                className='gap-1'
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className='h-4 w-4' />
                 Try again
               </Button>
             </CardFooter>

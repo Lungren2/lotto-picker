@@ -111,6 +111,11 @@ export function NumberSettings() {
               value={[quantity]}
               onValueChange={(value) => setQuantity(value[0])}
               className='w-full'
+              aria-label='Quantity of numbers to generate'
+              aria-valuemin={1}
+              aria-valuemax={maxValue}
+              aria-valuenow={quantity}
+              aria-valuetext={`${quantity} numbers`}
             />
             <div className='flex justify-between text-xs text-muted-foreground mt-1'>
               <span>1</span>
@@ -144,6 +149,11 @@ export function NumberSettings() {
                 }
               }}
               className='w-full'
+              aria-label='Maximum value for number generation'
+              aria-valuemin={quantity}
+              aria-valuemax={100}
+              aria-valuenow={maxValue}
+              aria-valuetext={`Maximum value of ${maxValue}`}
             />
             <div className='flex justify-between text-xs text-muted-foreground mt-1'>
               <span>{quantity}</span>
@@ -171,6 +181,16 @@ export function NumberSettings() {
               onClick={handleActionClick}
               className='flex-grow'
               variant={hasEnoughNumbers ? "default" : "destructive"}
+              aria-label={
+                hasEnoughNumbers
+                  ? "Generate new number set"
+                  : "Reset number pool"
+              }
+              aria-description={
+                hasEnoughNumbers
+                  ? `Generate ${quantity} random numbers from 1 to ${maxValue}`
+                  : "Reset the pool of available numbers"
+              }
             >
               {/* AnimatePresence for text change will be used with Framer Motion */}
               <AnimatePresence mode='wait'>
@@ -190,6 +210,8 @@ export function NumberSettings() {
                 onClick={() => resetNumbers()}
                 className='w-auto'
                 variant={"destructive"}
+                aria-label='Reset number pool'
+                aria-description='Clear all used numbers and start fresh'
               >
                 {/* AnimatePresence for text change will be used with Framer Motion */}
                 <AnimatePresence mode='wait'>
@@ -200,7 +222,7 @@ export function NumberSettings() {
                     animate='enter'
                     exit='exit'
                   >
-                    <RotateCcw />
+                    <RotateCcw aria-hidden='true' />
                   </motion.span>
                 </AnimatePresence>
               </Button>

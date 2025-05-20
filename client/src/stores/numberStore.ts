@@ -84,6 +84,8 @@ export const useNumberStore = create<NumberState>()(
         set((state) => {
           state.currentSet = next
           state.usedNumbers = [...state.usedNumbers, ...next]
+          // Increment numSets when a new set is generated
+          state.numSets = state.numSets + 1
 
           // Update remaining count and check if enough numbers are available
           const newAvailable = getAvailableNumbers(
@@ -106,6 +108,8 @@ export const useNumberStore = create<NumberState>()(
           state.currentSet = []
           state.remainingCount = state.maxValue
           state.hasEnoughNumbers = true
+          // Reset numSets to 1 when resetting numbers
+          state.numSets = 1
         })
       },
     })),
