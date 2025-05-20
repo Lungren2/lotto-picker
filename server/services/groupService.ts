@@ -2,11 +2,7 @@ import { query, queryOne, transaction } from "../db/client.ts"
 import { generateRandomCode } from "../utils/validation.ts"
 import { config } from "../config.ts"
 import { Group, GroupInvitation, User, GroupMember } from "../db/schema.ts"
-import {
-  NotFoundError,
-  ConflictError as _ConflictError,
-  BadRequestError as _BadRequestError,
-} from "../utils/errors.ts"
+import { NotFoundError, InternalServerError } from "../utils/errors.ts"
 
 /**
  * Create a new group
@@ -24,8 +20,15 @@ export async function createGroup(name: string): Promise<Group> {
 
     return result
   } catch (error) {
-    console.error("Error creating group:", error)
-    throw error
+    if (error instanceof Error) {
+      throw new InternalServerError("Failed to create group", {
+        originalError: error.message,
+        stack: error.stack,
+      })
+    }
+    throw new InternalServerError("Failed to create group", {
+      originalError: String(error),
+    })
   }
 }
 
@@ -75,8 +78,15 @@ export async function createInvitation(
 
     return result
   } catch (error) {
-    console.error("Error creating invitation:", error)
-    throw error
+    if (error instanceof Error) {
+      throw new InternalServerError("Failed to create invitation", {
+        originalError: error.message,
+        stack: error.stack,
+      })
+    }
+    throw new InternalServerError("Failed to create invitation", {
+      originalError: String(error),
+    })
   }
 }
 

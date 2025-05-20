@@ -4,12 +4,12 @@ on:
   push:
     branches: [main]
     paths:
-      - 'client/**'
-      - '.github/workflows/client-deploy.yml'
+      - "client/**"
+      - ".github/workflows/client-deploy.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'client/**'
+      - "client/**"
   workflow_dispatch:
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -72,7 +72,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -111,7 +111,7 @@ jobs:
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v2
         with:
-          publish-dir: './client/dist'
+          publish-dir: "./client/dist"
           production-branch: main
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"

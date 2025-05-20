@@ -1,10 +1,17 @@
-import { Router, Context } from "@oak/oak";
-import { createInvitation, getInvitationByCode, joinGroup } from "../services/groupService.ts";
-import { validateData } from "../utils/validation.ts";
-import { createInvitationRequestSchema, joinGroupRequestSchema } from "../db/schema.ts";
-import { NotFoundError, BadRequestError } from "../utils/errors.ts";
+import { Router, Context } from "@oak/oak"
+import {
+  createInvitation,
+  getInvitationByCode,
+  joinGroup,
+} from "../services/groupService.ts"
+import { validateData } from "../utils/validation.ts"
+import {
+  createInvitationRequestSchema,
+  joinGroupRequestSchema,
+} from "../db/schema.ts"
+import { BadRequestError } from "../utils/errors.ts"
 
-const router = new Router();
+const router = new Router()
 
 /**
  * Create a new group invitation
@@ -13,89 +20,89 @@ const router = new Router();
 router.post("/invitations", async (ctx: Context) => {
   try {
     // Parse and validate request body
-    const body = await ctx.request.body.json();
-    const validatedData = validateData(createInvitationRequestSchema, body);
-    
+    const body = await ctx.request.body.json()
+    const validatedData = validateData(createInvitationRequestSchema, body)
+
     // Create invitation
     const invitation = await createInvitation(
       validatedData.groupId,
       validatedData.expiresInHours
-    );
-    
+    )
+
     // Return success response
-    ctx.response.status = 201;
-    ctx.response.body = { 
-      success: true, 
-      data: invitation 
-    };
+    ctx.response.status = 201
+    ctx.response.body = {
+      success: true,
+      data: invitation,
+    }
   } catch (error) {
     // Error handling is done by the global error middleware
-    throw error;
+    throw error
   }
-});
+})
 
 /**
  * Get an invitation by code
  * GET /invitations/:code
  */
-router.get("/invitations/:code", async (ctx: Context) => {
+router.get<{ code: string }>("/invitations/:code", async (ctx) => {
   try {
-    const code = ctx.params.code;
-    
+    const { code } = ctx.params
+
     if (!code) {
-      throw new BadRequestError("Invitation code is required");
+      throw new BadRequestError("Invitation code is required")
     }
-    
+
     // Get invitation
-    const invitation = await getInvitationByCode(code);
-    
+    const invitation = await getInvitationByCode(code)
+
     // Return success response
-    ctx.response.body = { 
-      success: true, 
-      data: invitation 
-    };
+    ctx.response.body = {
+      success: true,
+      data: invitation,
+    }
   } catch (error) {
     // Error handling is done by the global error middleware
-    throw error;
+    throw error
   }
-});
+})
 
 /**
  * Join a group using an invitation code
  * POST /invitations/:code/join
  */
-router.post("/invitations/:code/join", async (ctx: Context) => {
+router.post<{ code: string }>("/invitations/:code/join", async (ctx) => {
   try {
-    const code = ctx.params.code;
-    
+    const { code } = ctx.params
+
     if (!code) {
-      throw new BadRequestError("Invitation code is required");
+      throw new BadRequestError("Invitation code is required")
     }
-    
+
     // Parse and validate request body
-    const body = await ctx.request.body.json();
+    const body = await ctx.request.body.json()
     const validatedData = validateData(joinGroupRequestSchema, {
       ...body,
-      invitationCode: code
-    });
-    
+      invitationCode: code,
+    })
+
     // Join group
     const result = await joinGroup(
       validatedData.invitationCode,
       validatedData.clientId,
       validatedData.displayName
-    );
-    
+    )
+
     // Return success response
-    ctx.response.status = 200;
-    ctx.response.body = { 
-      success: true, 
-      data: result 
-    };
+    ctx.response.status = 200
+    ctx.response.body = {
+      success: true,
+      data: result,
+    }
   } catch (error) {
     // Error handling is done by the global error middleware
-    throw error;
+    throw error
   }
-});
+})
 
-export default router;
+export default router

@@ -52,10 +52,11 @@ async function rotateSecret(
       config,
     ])
     console.log(`✅ Successfully rotated ${secretName} for ${config}`)
-  } catch (error) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
     console.error(
       `❌ Failed to rotate ${secretName} for ${config}:`,
-      error.message
+      errorMessage
     )
   }
 }
@@ -103,8 +104,12 @@ async function main() {
 
 // Run the script
 if (import.meta.main) {
-  main().catch((error) => {
-    console.error("Error:", error)
+  main().catch((error: unknown) => {
+    const errorMessage =
+      error instanceof Error
+        ? `${error.message}\n${error.stack || ""}`
+        : String(error)
+    console.error("Error:", errorMessage)
     Deno.exit(1)
   })
 }
